@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Project Intel | CrackIt AI</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#e5e2dd",
+                        "surface-dim": "#dcdad5",
+                        "on-secondary-fixed-variant": "#7f2a0d",
+                        "on-tertiary-fixed-variant": "#00504c",
+                        "surface-tint": "#4454be",
+                        "on-secondary-fixed": "#3a0b00",
+                        "primary-fixed": "#dfe0ff",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#293aa5",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed": "#00201e",
+                        "surface-container-high": "#ebe8e3",
+                        "inverse-primary": "#bbc3ff",
+                        "on-background": "#1c1c19",
+                        "on-tertiary-container": "#f3fffd",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#1c1c19",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#bbc3ff",
+                        "on-secondary-container": "#722104",
+                        "on-surface-variant": "#454653",
+                        "on-primary-fixed": "#000d5f",
+                        "inverse-surface": "#31302d",
+                        "surface-container-highest": "#e5e2dd",
+                        "outline-variant": "#c6c5d5",
+                        "primary": "#4151bb",
+                        "error": "#ba1a1a",
+                        "on-error": "#ffffff",
+                        "primary-container": "#5b6bd6",
+                        "surface-container-low": "#f6f3ee",
+                        "tertiary-fixed": "#7cf6ec",
+                        "tertiary-fixed-dim": "#5dd9d0",
+                        "secondary-container": "#fd8863",
+                        "outline": "#757684",
+                        "on-tertiary": "#ffffff",
+                        "tertiary": "#006762",
+                        "on-primary-container": "#fffbff",
+                        "surface-container": "#f0ede9",
+                        "tertiary-container": "#00837c",
+                        "secondary": "#9f4122",
+                        "inverse-on-surface": "#f3f0eb",
+                        "secondary-fixed-dim": "#ffb59e",
+                        "surface-bright": "#fcf9f4",
+                        "background": "#fcf9f4",
+                        "surface": "#fcf9f4",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#ffdbd0"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "margin-desktop": "48px",
+                        "gutter": "24px",
+                        "margin-mobile": "16px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .custom-shadow {
+            box-shadow: 0 10px 30px rgba(65, 81, 187, 0.08);
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e5e2dd;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-fixed">
+<!-- Sidebar Navigation -->
+<nav class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low dark:bg-surface-dim flex flex-col p-base space-y-2 z-50">
+<div class="px-4 py-6 mb-4">
+<h1 class="font-headline-md text-headline-md font-extrabold text-primary dark:text-primary-fixed">CrackIt AI</h1>
+<p class="text-label-sm text-on-surface-variant">Interview Mentor</p>
+</div>
+<div class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant/50 rounded-xl transition-all font-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant/50 rounded-xl transition-all font-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="mic_external_on">mic_external_on</span>
+<span>Interviews</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant/50 rounded-xl transition-all font-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span>Resume Match</span>
+</a>
+<!-- ACTIVE TAB: Project Intel -->
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-fixed dark:bg-primary text-on-primary-fixed dark:text-on-primary rounded-xl font-bold translate-x-1 transition-transform font-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="psychology" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<span>Project Intel</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant/50 rounded-xl transition-all font-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+<span>Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant/50 rounded-xl transition-all font-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</div>
+<div class="mt-auto space-y-1 pb-4">
+<button class="w-full bg-secondary text-on-secondary rounded-full py-3 px-6 font-bold hover:scale-[1.02] active:scale-95 transition-all mb-4">
+                Start Practice
+            </button>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors font-label-sm" href="#">
+<span class="material-symbols-outlined text-body-md" data-icon="help">help</span>
+<span>Help Center</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-surface-variant hover:text-error transition-colors font-label-sm" href="#">
+<span class="material-symbols-outlined text-body-md" data-icon="logout">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="ml-64 min-h-screen p-margin-desktop">
+<!-- Header Section -->
+<header class="mb-12 flex justify-between items-end">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-2">Project Intelligence</h2>
+<p class="text-body-lg text-on-surface-variant max-w-2xl">Upload your project documentation or presentation to extract architectural insights and generate tailored interview questions.</p>
+</div>
+<div class="flex gap-4">
+<button class="flex items-center gap-2 px-6 py-3 border border-outline rounded-full text-on-surface font-label-md hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+                    Recent History
+                </button>
+</div>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Upload Control Card -->
+<section class="col-span-12 lg:col-span-4 flex flex-col gap-gutter">
+<div class="bg-surface-container-lowest rounded-[24px] p-8 custom-shadow border border-white/50 flex flex-col items-center justify-center text-center group cursor-pointer border-dashed border-2 border-primary/20 hover:border-primary/50 transition-all min-h-[300px]">
+<div class="w-16 h-16 bg-primary-fixed rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-[32px]" data-icon="cloud_upload">cloud_upload</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-2">Upload Project</h3>
+<p class="text-body-md text-on-surface-variant mb-6 px-4">PDF, PPTX, or DOCX supported. Max file size 25MB.</p>
+<input class="hidden" id="project-upload" type="file"/>
+<label class="bg-primary text-on-primary px-8 py-3 rounded-full font-bold cursor-pointer hover:shadow-lg transition-all active:scale-95" for="project-upload">
+                        Select File
+                    </label>
+</div>
+<!-- Analysis Status Card -->
+<div class="bg-surface-container-high/50 rounded-[24px] p-6 custom-shadow">
+<div class="flex items-center justify-between mb-4">
+<span class="text-label-md text-on-surface-variant uppercase tracking-wider">Analysis Engine</span>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed px-3 py-1 rounded-full text-label-sm font-bold animate-pulse">Running AI</span>
+</div>
+<div class="space-y-4">
+<div class="space-y-2">
+<div class="flex justify-between text-label-sm">
+<span>Entity Extraction</span>
+<span>85%</span>
+</div>
+<div class="h-3 w-full bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full transition-all duration-1000" style="width: 85%"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-label-sm">
+<span>Architecture Mapping</span>
+<span>42%</span>
+</div>
+<div class="h-3 w-full bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-secondary rounded-full transition-all duration-1000" style="width: 42%"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Project Summary & Intel -->
+<section class="col-span-12 lg:col-span-8 space-y-gutter">
+<!-- Summary Card -->
+<div class="bg-surface-container-lowest rounded-[24px] p-8 custom-shadow border border-white/50">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+<div>
+<div class="flex items-center gap-2 text-primary mb-1">
+<span class="material-symbols-outlined" data-icon="article">article</span>
+<span class="font-label-md">Current Analysis</span>
+</div>
+<h3 class="font-headline-lg text-headline-lg">Cloud-Native Microservices Architecture</h3>
+</div>
+<div class="flex -space-x-3">
+<div class="w-10 h-10 rounded-full border-2 border-surface bg-surface-variant flex items-center justify-center text-label-sm font-bold">JD</div>
+<div class="w-10 h-10 rounded-full border-2 border-surface bg-primary-fixed flex items-center justify-center text-label-sm font-bold text-primary">AI</div>
+</div>
+</div>
+<p class="text-body-md text-on-surface-variant mb-8 leading-relaxed">
+                        A distributed e-commerce backend utilizing a hexagonal architecture to decouple domain logic from external adapters. The system leverages Kafka for asynchronous messaging and Redis for high-availability distributed caching.
+                    </p>
+<div class="flex flex-wrap gap-2 mb-8">
+<span class="px-4 py-2 bg-surface-container-highest rounded-full text-label-md font-medium text-on-surface-variant flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span> Java 17
+                        </span>
+<span class="px-4 py-2 bg-surface-container-highest rounded-full text-label-md font-medium text-on-surface-variant flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span> Spring Boot
+                        </span>
+<span class="px-4 py-2 bg-surface-container-highest rounded-full text-label-md font-medium text-on-surface-variant flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span> Kubernetes
+                        </span>
+<span class="px-4 py-2 bg-surface-container-highest rounded-full text-label-md font-medium text-on-surface-variant flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span> Apache Kafka
+                        </span>
+<span class="px-4 py-2 bg-surface-container-highest rounded-full text-label-md font-medium text-on-surface-variant flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary-container"></span> PostgreSQL
+                        </span>
+</div>
+<!-- Architecture Overview Visualization Placeholder -->
+<div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-surface-container-low border border-outline-variant flex items-center justify-center">
+<div class="absolute inset-0 opacity-10 pointer-events-none">
+<!-- Subtle Grid pattern could go here -->
+</div>
+<div class="text-center z-10 px-8">
+<div class="mb-4 flex justify-center">
+<div class="relative">
+<span class="material-symbols-outlined text-[64px] text-primary/30" data-icon="schema">schema</span>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+</div>
+</div>
+</div>
+<h4 class="font-headline-md text-on-surface mb-2">Generating Architectural Visualizer</h4>
+<p class="text-label-md text-on-surface-variant">Mapping service dependencies and data flow patterns...</p>
+</div>
+<!-- Backdrop placeholder image with detailed prompt -->
+<div class="absolute inset-0 -z-0 opacity-20">
+<div class="w-full h-full bg-cover bg-center" data-alt="A clean, minimalist 3D isometric technical diagram of software architecture. The scene shows translucent glass blocks connected by glowing neon lines of soft indigo and coral pink. The background is a warm, high-key studio setting with soft diffused lighting, matching a professional and friendly SaaS aesthetic. The focus is on a modern, high-tech interface for visualizing cloud services and data pipelines in a serene and organized manner." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBwmGbDF51fLDzm0COAj0zGZgOqWoYzxLqHhbmLkZapGYUTtRprIh_LRUnsq8H12PEmOBpXouaL58BO8VfcsTxy1Mk6-wbv1txp4aYZZ3c6wSyvi_YPVGJlDrLFokiLRSke5xMEdUf6dONja4sRB1NRXLwh56WmkaPwP7aguDjs-sUwngc-Z2gPGJk6vnQKwXy2XLJ1Gtybqk0-ONYVN9HfZJ-wh2psJR0LOSXXqtC4dE65bD7DcX32HA')"></div>
+</div>
+</div>
+</div>
+<!-- Sample Questions -->
+<div class="space-y-4">
+<h4 class="font-headline-md px-2">Predictive Interview Questions</h4>
+<div class="grid md:grid-cols-2 gap-4">
+<!-- Question Card 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-[24px] custom-shadow border border-white/50 group hover:bg-primary-container hover:text-on-primary-container transition-all cursor-pointer">
+<div class="flex items-start justify-between mb-4">
+<span class="bg-primary-fixed text-primary px-3 py-1 rounded-full text-label-sm font-bold group-hover:bg-white/20 group-hover:text-white">System Design</span>
+<span class="material-symbols-outlined text-surface-variant group-hover:text-white/50" data-icon="more_horiz">more_horiz</span>
+</div>
+<p class="font-body-md font-semibold leading-snug">"How did you handle eventual consistency between your microservices when using Kafka for transaction events?"</p>
+<div class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="text-label-sm font-bold">View Model Answer</span>
+<span class="material-symbols-outlined text-body-md" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+<!-- Question Card 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-[24px] custom-shadow border border-white/50 group hover:bg-secondary-container hover:text-on-secondary-container transition-all cursor-pointer">
+<div class="flex items-start justify-between mb-4">
+<span class="bg-secondary-fixed text-secondary px-3 py-1 rounded-full text-label-sm font-bold group-hover:bg-white/20 group-hover:text-white">Scalability</span>
+<span class="material-symbols-outlined text-surface-variant group-hover:text-white/50" data-icon="more_horiz">more_horiz</span>
+</div>
+<p class="font-body-md font-semibold leading-snug">"Why did you choose Redis for caching instead of a simple local memory cache like Caffeine?"</p>
+<div class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="text-label-sm font-bold">View Model Answer</span>
+<span class="material-symbols-outlined text-body-md" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+<!-- Question Card 3 -->
+<div class="bg-surface-container-lowest p-6 rounded-[24px] custom-shadow border border-white/50 group hover:bg-tertiary-container hover:text-on-tertiary-container transition-all cursor-pointer">
+<div class="flex items-start justify-between mb-4">
+<span class="bg-tertiary-fixed text-tertiary px-3 py-1 rounded-full text-label-sm font-bold group-hover:bg-white/20 group-hover:text-white">Resilience</span>
+<span class="material-symbols-outlined text-surface-variant group-hover:text-white/50" data-icon="more_horiz">more_horiz</span>
+</div>
+<p class="font-body-md font-semibold leading-snug">"Explain your disaster recovery strategy for the PostgreSQL database in the event of a region failure."</p>
+<div class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="text-label-sm font-bold">View Model Answer</span>
+<span class="material-symbols-outlined text-body-md" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+<!-- Add Custom Question Button -->
+<div class="border-2 border-dashed border-outline-variant p-6 rounded-[24px] flex flex-col items-center justify-center text-on-surface-variant hover:border-primary/50 hover:bg-primary-fixed/20 transition-all cursor-pointer group">
+<span class="material-symbols-outlined text-[32px] mb-2 group-hover:scale-110 transition-transform" data-icon="add_circle">add_circle</span>
+<span class="text-label-md font-bold">Add Custom Question</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="ml-64 bg-surface-container-highest dark:bg-surface-variant w-[calc(100%-16rem)] py-12 px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-gutter border-t border-white/10">
+<div class="flex flex-col gap-2">
+<h5 class="font-headline-md text-headline-md font-extrabold text-primary dark:text-primary-fixed">CrackIt AI</h5>
+<p class="text-body-md text-on-surface-variant">© 2024 CrackIt AI. Friendly Professional Mentor.</p>
+</div>
+<div class="flex gap-8">
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors font-label-sm" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors font-label-sm" href="#">Terms of Service</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors font-label-sm" href="#">Cookie Policy</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors font-label-sm" href="#">Support</a>
+</div>
+</footer>
+<!-- Interactivity Script -->
+<script>
+        // Simple micro-interaction for upload zone
+        const uploadZone = document.querySelector('label[for="project-upload"]').parentElement;
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('bg-primary-fixed/30');
+        });
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('bg-primary-fixed/30');
+        });
+        
+        // Progress bar animation simulation
+        window.addEventListener('load', () => {
+            const bars = document.querySelectorAll('.bg-surface-variant div');
+            bars.forEach(bar => {
+                const target = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = target;
+                }, 500);
+            });
+        });
+    </script>
+</body></html>

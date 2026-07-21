@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CrackIt AI | Interview Setup</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#e5e2dd",
+                        "surface-dim": "#dcdad5",
+                        "on-secondary-fixed-variant": "#7f2a0d",
+                        "on-tertiary-fixed-variant": "#00504c",
+                        "surface-tint": "#4454be",
+                        "on-secondary-fixed": "#3a0b00",
+                        "primary-fixed": "#dfe0ff",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#293aa5",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed": "#00201e",
+                        "surface-container-high": "#ebe8e3",
+                        "inverse-primary": "#bbc3ff",
+                        "on-background": "#1c1c19",
+                        "on-tertiary-container": "#f3fffd",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#1c1c19",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#bbc3ff",
+                        "on-secondary-container": "#722104",
+                        "on-surface-variant": "#454653",
+                        "on-primary-fixed": "#000d5f",
+                        "inverse-surface": "#31302d",
+                        "surface-container-highest": "#e5e2dd",
+                        "outline-variant": "#c6c5d5",
+                        "primary": "#4151bb",
+                        "error": "#ba1a1a",
+                        "on-error": "#ffffff",
+                        "primary-container": "#5b6bd6",
+                        "surface-container-low": "#f6f3ee",
+                        "tertiary-fixed": "#7cf6ec",
+                        "tertiary-fixed-dim": "#5dd9d0",
+                        "secondary-container": "#fd8863",
+                        "outline": "#757684",
+                        "on-tertiary": "#ffffff",
+                        "tertiary": "#006762",
+                        "on-primary-container": "#fffbff",
+                        "surface-container": "#f0ede9",
+                        "tertiary-container": "#00837c",
+                        "secondary": "#9f4122",
+                        "inverse-on-surface": "#f3f0eb",
+                        "secondary-fixed-dim": "#ffb59e",
+                        "surface-bright": "#fcf9f4",
+                        "background": "#fcf9f4",
+                        "surface": "#fcf9f4",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#ffdbd0"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "margin-desktop": "48px",
+                        "gutter": "24px",
+                        "margin-mobile": "16px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #fcf9f4; /* Warm Cream Base */
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+        .persona-selector:checked + label {
+            border-color: #4151bb;
+            background-color: #dfe0ff;
+        }
+        .active-tab-indicator {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .custom-shadow {
+            box-shadow: 0 10px 30px rgba(65, 81, 187, 0.08);
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface">
+<!-- SideNavBar (The Anchor) -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low flex flex-col p-base space-y-2 z-40">
+<div class="px-4 py-8">
+<h1 class="font-headline-md text-headline-md font-extrabold text-primary">CrackIt AI</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-70">Interview Mentor</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-xl font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-fixed text-on-primary-fixed rounded-xl font-bold translate-x-1 transition-transform font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="mic_external_on">mic_external_on</span>
+                Interviews
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-xl font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+                Resume Match
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-xl font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+                Project Intel
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-xl font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+                Analytics
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-xl font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                Settings
+            </a>
+</nav>
+<div class="mt-auto pt-4 space-y-1 border-t border-surface-variant/30">
+<button class="w-full bg-secondary-container text-on-secondary-container font-bold py-3 rounded-xl mb-4 active:scale-95 transition-transform">
+                Start Practice
+            </button>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-xl font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+                Help Center
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-xl font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                Logout
+            </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 min-h-screen p-margin-desktop">
+<!-- Header Section -->
+<header class="mb-10">
+<h2 class="font-headline-xl text-headline-xl text-primary mb-2">Configure Interview</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Tailor your practice session to your specific role and anxiety level. Our AI mentor adjusts its personality based on your selection.</p>
+</header>
+<!-- Configuration Bento Grid -->
+<div class="bento-grid">
+<!-- Interview Persona Selection -->
+<section class="col-span-12 lg:col-span-8 space-y-6">
+<div class="bg-surface-container-lowest rounded-[24px] p-8 custom-shadow">
+<h3 class="font-headline-md text-headline-md mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="person_search">person_search</span>
+                        Select Your Interviewer
+                    </h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Persona 1 -->
+<div class="relative group">
+<input checked="" class="hidden persona-selector" id="persona_friendly" name="persona" type="radio"/>
+<label class="block p-6 rounded-2xl border-2 border-surface-variant bg-surface hover:border-primary/50 transition-all cursor-pointer group-hover:shadow-md" for="persona_friendly">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-16 h-16 rounded-full overflow-hidden bg-secondary-fixed">
+<img class="w-full h-full object-cover" data-alt="A warm, friendly HR professional with a kind smile, wearing a professional but approachable soft-colored blazer, set against a blurred modern office background with warm morning sunlight. The style is soft, tactile, and professional, echoing a mentor-like atmosphere with high-key lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3lETbgUKvSgiyB68CbFDYVuyYpX8xIpmJk-JLie8cpBYPDOQxoSUT-hmqBoqAvDmzuQQR3dkDMAOZEhbKk05AmM1uY4k8R5oUPOjON8o-fs7R5tspB_VXfXGOPGK7GkHCGt5w_hR6yYa52PX_APlsNj6LJU1SaZY8lixBbTEoj9ryic_9Zo9uKKqc-euQDfix7HOnFVBFHjRo9oBvYZPIqm478FFr_f_8Qy3BM7O9-fWgBBSRVDwVfg"/>
+</div>
+<div>
+<h4 class="font-headline-md text-[18px]">Friendly HR</h4>
+<p class="text-label-sm text-on-surface-variant">Focus: Soft Skills &amp; Culture</p>
+</div>
+</div>
+<p class="text-body-md text-on-surface-variant leading-relaxed">Encouraging and patient. Great for warm-ups or behavioral practice. Helps you articulate your "why."</p>
+</label>
+<span class="material-symbols-outlined absolute top-4 right-4 text-primary opacity-0 persona-check group-has-[:checked]:opacity-100" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<!-- Persona 2 -->
+<div class="relative group">
+<input class="hidden persona-selector" id="persona_senior" name="persona" type="radio"/>
+<label class="block p-6 rounded-2xl border-2 border-surface-variant bg-surface hover:border-primary/50 transition-all cursor-pointer group-hover:shadow-md" for="persona_senior">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-16 h-16 rounded-full overflow-hidden bg-primary-fixed">
+<img class="w-full h-full object-cover" data-alt="A focused Senior Engineering Manager with glasses, a slight smile of expertise, wearing a casual dark sweater. The setting is a tech-focused home office with a neat bookshelf and warm ambient lighting. The visual style is crisp, modern, and intellectual, projecting authority and calmness." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRLEoHHKtTz7qaFyKzr9Qr-pZBwsuRy2BJEGQyrTZ7LxhdnDlaJ-VZXRuA4XEr-9lHoYkHKzCclNNQMBvXaSgIP-FmA-zaDwEC5DgjeEXsEc3pTt-c2wt_eq4sDffqRHQ0pVT7UuPFxoYMKjjjmhOxEVR_EMLQhLC_fkBtPHoc1iFYheK04TGQZsHYCoJDDySpDP8ZMdhUcIQuTk35Ow-5uXouysGE6osu6X7H_oOWYUjBBXM4d3-mPw"/>
+</div>
+<div>
+<h4 class="font-headline-md text-[18px]">Senior Eng Manager</h4>
+<p class="text-label-sm text-on-surface-variant">Focus: Architecture &amp; Logic</p>
+</div>
+</div>
+<p class="text-body-md text-on-surface-variant leading-relaxed">Direct and analytical. Expect follow-up questions on your trade-offs and technical decisions.</p>
+</label>
+<span class="material-symbols-outlined absolute top-4 right-4 text-primary opacity-0 persona-check group-has-[:checked]:opacity-100" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+</div>
+<!-- Parameters Section -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Type & Difficulty -->
+<div class="bg-surface-container-lowest rounded-[24px] p-8 custom-shadow">
+<h3 class="font-headline-md text-[20px] mb-6">Type &amp; Difficulty</h3>
+<div class="space-y-4">
+<div>
+<label class="font-label-md text-on-surface-variant block mb-2 uppercase tracking-wider">Interview Type</label>
+<div class="grid grid-cols-2 gap-2 p-1 bg-surface-container rounded-xl">
+<button class="py-2 px-4 rounded-lg bg-surface text-primary font-bold shadow-sm">Technical</button>
+<button class="py-2 px-4 rounded-lg text-on-surface-variant hover:bg-surface/50 transition-all">HR/Behavioral</button>
+</div>
+</div>
+<div>
+<label class="font-label-md text-on-surface-variant block mb-2 uppercase tracking-wider">Difficulty Level</label>
+<div class="flex gap-2">
+<button class="flex-1 py-2 rounded-lg border border-surface-variant hover:border-primary transition-all">Junior</button>
+<button class="flex-1 py-2 rounded-lg bg-primary text-on-primary font-bold">Mid/Senior</button>
+<button class="flex-1 py-2 rounded-lg border border-surface-variant hover:border-primary transition-all">Lead/Staff</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Scope & Language -->
+<div class="bg-surface-container-lowest rounded-[24px] p-8 custom-shadow">
+<h3 class="font-headline-md text-[20px] mb-6">Scope &amp; Language</h3>
+<div class="space-y-4">
+<div class="flex gap-4">
+<div class="flex-1">
+<label class="font-label-md text-on-surface-variant block mb-2 uppercase tracking-wider">Questions</label>
+<select class="w-full bg-surface-container border-none rounded-xl p-3 focus:ring-2 focus:ring-primary/20">
+<option>5 Questions</option>
+<option selected="">10 Questions</option>
+<option>15 Questions</option>
+<option>Unlimited</option>
+</select>
+</div>
+<div class="flex-1">
+<label class="font-label-md text-on-surface-variant block mb-2 uppercase tracking-wider">Language</label>
+<select class="w-full bg-surface-container border-none rounded-xl p-3 focus:ring-2 focus:ring-primary/20">
+<option selected="">English (US)</option>
+<option>English (UK)</option>
+<option>Spanish</option>
+<option>German</option>
+</select>
+</div>
+</div>
+<div class="pt-2">
+<label class="font-label-md text-on-surface-variant block mb-2 uppercase tracking-wider">Topic Tags</label>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-label-sm">React.js</span>
+<span class="px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-label-sm">System Design</span>
+<span class="px-3 py-1 rounded-full bg-surface-container text-on-surface-variant text-label-sm border border-surface-variant">+ Add Topic</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Preview & Controls Panel -->
+<aside class="col-span-12 lg:col-span-4 space-y-6">
+<!-- Preview Panel -->
+<div class="bg-primary rounded-[24px] p-8 text-on-primary custom-shadow relative overflow-hidden">
+<!-- Background Decor -->
+<div class="absolute -top-12 -right-12 w-32 h-32 bg-primary-container rounded-full opacity-50 blur-2xl"></div>
+<h3 class="font-headline-md text-headline-md mb-6 relative z-10">Interview Preview</h3>
+<div class="space-y-6 relative z-10">
+<div class="p-4 bg-white/10 rounded-2xl backdrop-blur-sm border border-white/10">
+<p class="text-label-sm opacity-80 mb-1">SELECTED FOCUS</p>
+<p class="font-bold text-lg">Scalable Architecture &amp; Front-end State Management</p>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between items-center text-label-md">
+<span>Voice &amp; Audio</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-primary-container peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary-container"></div>
+</label>
+</div>
+<div class="flex justify-between items-center text-label-md">
+<span>Camera Preview</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-primary-container peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary-container"></div>
+</label>
+</div>
+<div class="flex justify-between items-center text-label-md">
+<span>Real-time Transcripts</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-primary-container peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary-container"></div>
+</label>
+</div>
+</div>
+<div class="pt-6">
+<div class="flex items-center gap-4 mb-4">
+<div class="p-3 bg-white/20 rounded-xl">
+<span class="material-symbols-outlined" data-icon="avg_time">avg_time</span>
+</div>
+<div>
+<p class="text-label-sm opacity-80">ESTIMATED DURATION</p>
+<p class="font-bold">25 - 35 Minutes</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Call to Action -->
+<div class="bg-surface-container-lowest rounded-[24px] p-8 custom-shadow flex flex-col items-center text-center">
+<div class="w-20 h-20 bg-secondary-fixed rounded-full flex items-center justify-center mb-6 animate-pulse">
+<span class="material-symbols-outlined text-on-secondary-fixed text-4xl" data-icon="rocket_launch">rocket_launch</span>
+</div>
+<h4 class="font-headline-md text-[20px] mb-2">Ready to CrackIt?</h4>
+<p class="text-on-surface-variant mb-8 text-body-md">Take a deep breath. You've got this.</p>
+<button class="w-full bg-secondary text-on-secondary font-bold py-5 rounded-full text-lg shadow-lg hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3">
+                        Start Interview
+                        <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<p class="mt-4 text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="lock">lock</span>
+                        Your session is private &amp; secure
+                    </p>
+</div>
+</aside>
+</div>
+</main>
+<!-- Interactive Logic -->
+<script>
+        document.querySelectorAll('.persona-selector').forEach(input => {
+            input.addEventListener('change', (e) => {
+                // Simplified UI feedback for selection
+                console.log('Interviewer selected:', e.target.id);
+            });
+        });
+
+        // Small interaction for start button
+        const startBtn = document.querySelector('button.bg-secondary');
+        startBtn.addEventListener('mouseenter', () => {
+            startBtn.classList.add('shadow-secondary-container/50');
+        });
+        startBtn.addEventListener('mouseleave', () => {
+            startBtn.classList.remove('shadow-secondary-container/50');
+        });
+    </script>
+</body></html>

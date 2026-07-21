@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Reports - CrackIt AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Theme Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "surface-variant": "#e5e2dd",
+                "surface-dim": "#dcdad5",
+                "on-secondary-fixed-variant": "#7f2a0d",
+                "on-tertiary-fixed-variant": "#00504c",
+                "surface-tint": "#4454be",
+                "on-secondary-fixed": "#3a0b00",
+                "primary-fixed": "#dfe0ff",
+                "on-error-container": "#93000a",
+                "on-primary-fixed-variant": "#293aa5",
+                "on-secondary": "#ffffff",
+                "on-tertiary-fixed": "#00201e",
+                "surface-container-high": "#ebe8e3",
+                "inverse-primary": "#bbc3ff",
+                "on-background": "#1c1c19",
+                "on-tertiary-container": "#f3fffd",
+                "on-primary": "#ffffff",
+                "on-surface": "#1c1c19",
+                "error-container": "#ffdad6",
+                "primary-fixed-dim": "#bbc3ff",
+                "on-secondary-container": "#722104",
+                "on-surface-variant": "#454653",
+                "on-primary-fixed": "#000d5f",
+                "inverse-surface": "#31302d",
+                "surface-container-highest": "#e5e2dd",
+                "outline-variant": "#c6c5d5",
+                "primary": "#4151bb",
+                "error": "#ba1a1a",
+                "on-error": "#ffffff",
+                "primary-container": "#5b6bd6",
+                "surface-container-low": "#f6f3ee",
+                "tertiary-fixed": "#7cf6ec",
+                "tertiary-fixed-dim": "#5dd9d0",
+                "secondary-container": "#fd8863",
+                "outline": "#757684",
+                "on-tertiary": "#ffffff",
+                "tertiary": "#006762",
+                "on-primary-container": "#fffbff",
+                "surface-container": "#f0ede9",
+                "tertiary-container": "#00837c",
+                "secondary": "#9f4122",
+                "inverse-on-surface": "#f3f0eb",
+                "secondary-fixed-dim": "#ffb59e",
+                "surface-bright": "#fcf9f4",
+                "background": "#fcf9f4",
+                "surface": "#fcf9f4",
+                "surface-container-lowest": "#ffffff",
+                "secondary-fixed": "#ffdbd0"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "base": "8px",
+                "margin-desktop": "48px",
+                "gutter": "24px",
+                "margin-mobile": "16px",
+                "container-max": "1280px"
+            },
+            "fontFamily": {
+                "body-lg": ["Inter"],
+                "label-md": ["Inter"],
+                "label-sm": ["Inter"],
+                "headline-xl": ["Plus Jakarta Sans"],
+                "headline-md": ["Plus Jakarta Sans"],
+                "headline-lg-mobile": ["Plus Jakarta Sans"],
+                "headline-lg": ["Plus Jakarta Sans"],
+                "body-md": ["Inter"]
+            },
+            "fontSize": {
+                "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body {
+            background-color: #fcf9f4; /* Using the Cream base */
+            color: #1c1c19;
+            overflow-x: hidden;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .report-card {
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
+        }
+        .report-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(65, 81, 187, 0.08);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e5e2dd;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md selection:bg-primary-fixed">
+<div class="flex min-h-screen">
+<!-- SideNavBar (The Anchor) -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low flex flex-col p-base space-y-2 z-50">
+<div class="px-4 py-6">
+<h1 class="font-headline-md text-headline-md font-extrabold text-primary">CrackIt AI</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-70">Interview Mentor</p>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<!-- Interviews -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="mic_external_on">mic_external_on</span>
+<span class="font-label-md text-label-md">Interviews</span>
+</a>
+<!-- Reports (Active Selection - Matches Intent) -->
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-fixed text-on-primary-fixed rounded-xl font-bold translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-md text-label-md">Analytics</span>
+</a>
+<!-- Resume Match -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="font-label-md text-label-md">Resume Match</span>
+</a>
+<!-- Project Intel -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span class="font-label-md text-label-md">Project Intel</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto space-y-1 pt-4 border-t border-surface-variant">
+<button class="w-full mb-4 bg-secondary-container text-on-secondary-container py-3 rounded-full font-bold flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="bolt">bolt</span>
+                    Start Practice
+                </button>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-md text-label-md">Help Center</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 flex-1 p-margin-desktop min-h-screen">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row md:items-end justify-between gap-gutter mb-12">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-background mb-2">Performance Reports</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xl">
+                        Deep-dive insights from your AI-led mock sessions, resume audits, and job description alignments.
+                    </p>
+</div>
+<div class="flex items-center gap-base">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant opacity-60">search</span>
+<input class="bg-surface-container-lowest border border-outline-variant/30 rounded-full pl-12 pr-6 py-3 w-64 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Search reports..." type="text"/>
+</div>
+<button class="bg-surface-container text-on-surface px-6 py-3 rounded-full font-label-md flex items-center gap-2 hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="filter_list">filter_list</span>
+                        Filter
+                    </button>
+</div>
+</header>
+<!-- Reports Content -->
+<div class="space-y-12">
+<!-- Section: Interview Reports (Asymmetric Bento Style) -->
+<section>
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline-md text-headline-md text-on-surface flex items-center gap-3">
+<span class="w-8 h-8 rounded-lg bg-primary-fixed flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]" data-icon="mic_external_on">mic_external_on</span>
+</span>
+                            Interview Sessions
+                        </h3>
+<a class="text-primary font-label-md hover:underline" href="#">View all</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Featured Card -->
+<div class="md:col-span-8 report-card bg-surface-container-lowest p-6 rounded-[24px] border border-outline-variant/10 flex flex-col md:flex-row gap-6 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4">
+<span class="px-3 py-1 bg-tertiary-container text-on-tertiary-container text-label-sm rounded-full">Most Recent</span>
+</div>
+<div class="w-full md:w-48 h-48 rounded-2xl overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="A professional business woman smiling warmly in a bright, modern corporate office setting with floor-to-ceiling windows. The aesthetic is clean and high-key, utilizing soft cream and indigo tones consistent with a mentor-like atmosphere. The lighting is natural and flattering, suggesting a successful mock interview environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsZm5BVBqWWwCTgYCIL7fGUKE7PAtyju-f3VZTT5i1RfT5jNCIW84Yu7zecCRI9RUkxAw5ZtYDSg9Pe61xVRXHDTbnAgk1Bxk1GLHk3_lwLQPuu2LWmPsJwCW1N5ZR1DS_bouAaRWM4pxqRQMpmxQBldvcGX3YCQKIB6QSoP2YE7sOf2ZGgecGA15SvkM5GERr2KIXgqb6pZMo1pP8c1ZqEpQsaCIVLHxTn93ftF3SroXLh3j1giNnJg"/>
+</div>
+<div class="flex flex-col justify-between flex-1">
+<div>
+<h4 class="font-headline-md text-headline-md text-on-surface mb-1">Senior Product Designer</h4>
+<p class="text-on-surface-variant font-label-sm mb-4">Meta • Oct 24, 2024 • 45 mins</p>
+<div class="flex gap-4 mb-6">
+<div class="flex flex-col">
+<span class="text-label-sm text-on-surface-variant opacity-60">Score</span>
+<span class="text-headline-md text-primary">88/100</span>
+</div>
+<div class="w-px h-10 bg-outline-variant self-center"></div>
+<div class="flex flex-col">
+<span class="text-label-sm text-on-surface-variant opacity-60">Confidence</span>
+<span class="text-headline-md text-tertiary">High</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="bg-primary text-on-primary px-6 py-2 rounded-full font-label-md hover:opacity-90 active:scale-95 transition-all">Review Feedback</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="download">download</span></button>
+<button class="p-2 text-on-surface-variant hover:text-error transition-colors"><span class="material-symbols-outlined" data-icon="delete">delete</span></button>
+</div>
+</div>
+</div>
+<!-- Secondary Interview Card -->
+<div class="md:col-span-4 report-card bg-surface-container-lowest p-6 rounded-[24px] border border-outline-variant/10 flex flex-col">
+<div class="mb-4">
+<span class="text-on-surface-variant font-label-sm">Oct 21, 2024</span>
+<h4 class="font-headline-md text-headline-md text-on-surface mt-1">UX Researcher</h4>
+<p class="text-on-surface-variant font-body-md">Google • Initial Screening</p>
+</div>
+<div class="mt-auto">
+<div class="w-full bg-primary-fixed/30 h-3 rounded-full mb-4">
+<div class="bg-primary h-full rounded-full" style="width: 72%"></div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-label-sm font-bold text-on-surface">72% Overall Match</span>
+<button class="text-primary material-symbols-outlined" data-icon="arrow_forward">arrow_forward</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Resume & ATS Analysis (Grid) -->
+<section>
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline-md text-headline-md text-on-surface flex items-center gap-3">
+<span class="w-8 h-8 rounded-lg bg-secondary-fixed flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[20px]" data-icon="description">description</span>
+</span>
+                            Resume &amp; ATS Audit
+                        </h3>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Resume Card 1 -->
+<div class="report-card bg-surface-container-lowest p-6 rounded-[24px] border border-outline-variant/10 flex flex-col h-64">
+<div class="flex justify-between items-start mb-4">
+<span class="p-2 bg-surface-container rounded-lg text-primary material-symbols-outlined" data-icon="article">article</span>
+<div class="flex gap-1">
+<button class="p-1 hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="download">download</span></button>
+<button class="p-1 hover:text-error transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span></button>
+</div>
+</div>
+<h5 class="font-label-md text-headline-md mb-1 leading-tight">Product_Manager_v4.pdf</h5>
+<p class="text-on-surface-variant text-label-sm mb-auto">Analyzed 2 days ago</p>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-tertiary-container text-on-tertiary-container text-label-sm rounded-full">ATS Optimized</span>
+<span class="text-label-md font-bold text-tertiary">92/100</span>
+</div>
+</div>
+<!-- Resume Card 2 -->
+<div class="report-card bg-surface-container-lowest p-6 rounded-[24px] border border-outline-variant/10 flex flex-col h-64">
+<div class="flex justify-between items-start mb-4">
+<span class="p-2 bg-surface-container rounded-lg text-secondary material-symbols-outlined" data-icon="warning">warning</span>
+<div class="flex gap-1">
+<button class="p-1 hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="download">download</span></button>
+<button class="p-1 hover:text-error transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span></button>
+</div>
+</div>
+<h5 class="font-label-md text-headline-md mb-1 leading-tight">Growth_Specialist.docx</h5>
+<p class="text-on-surface-variant text-label-sm mb-auto">Analyzed 1 week ago</p>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-error-container text-on-error-container text-label-sm rounded-full">Needs Fix</span>
+<span class="text-label-md font-bold text-error">45/100</span>
+</div>
+</div>
+<!-- JD Match Card -->
+<div class="report-card bg-surface-container-lowest p-6 rounded-[24px] border border-outline-variant/10 flex flex-col h-64 border-l-4 border-l-secondary">
+<div class="mb-4">
+<span class="material-symbols-outlined text-secondary" data-icon="handshake">handshake</span>
+<h5 class="font-label-md text-headline-md mt-2 leading-tight">Airbnb Senior Designer</h5>
+</div>
+<p class="text-on-surface-variant text-label-sm mb-auto">Matched against "Master_CV_2024"</p>
+<div class="space-y-2">
+<div class="flex justify-between text-label-sm">
+<span>Keywords Match</span>
+<span class="font-bold">85%</span>
+</div>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full">
+<div class="bg-secondary h-full rounded-full" style="width: 85%"></div>
+</div>
+</div>
+</div>
+<!-- New Scan CTA -->
+<button class="report-card bg-primary text-on-primary p-6 rounded-[24px] flex flex-col items-center justify-center gap-4 text-center group">
+<div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[32px]" data-icon="add">add</span>
+</div>
+<div>
+<h5 class="font-label-md text-headline-md">New Analysis</h5>
+<p class="text-on-primary/70 text-label-sm">Resume or Job Match</p>
+</div>
+</button>
+</div>
+</section>
+<!-- Section: Skill Heatmap & Trends (Atmospheric Component) -->
+<section class="bg-surface-container-low rounded-[32px] p-8 relative overflow-hidden">
+<div class="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<div class="lg:col-span-1">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Growth Analytics</h3>
+<p class="text-on-surface-variant font-body-md mb-6">Your soft skills have improved by 14% this month. Keep practicing technical depth.</p>
+<div class="space-y-4">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined" data-icon="trending_up">trending_up</span>
+</div>
+<div>
+<p class="font-label-md leading-none">Communication</p>
+<p class="text-label-sm text-tertiary">+22% boost</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-lowest flex items-center justify-center text-secondary shadow-sm">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+</div>
+<div>
+<p class="font-label-md leading-none">System Design</p>
+<p class="text-label-sm text-on-surface-variant">Consistent performance</p>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-2 bg-surface-container-lowest rounded-2xl p-6 shadow-sm">
+<div class="flex justify-between mb-4">
+<span class="font-label-md">Weekly Activity</span>
+<div class="flex gap-2">
+<span class="w-3 h-3 rounded bg-surface-container-high"></span>
+<span class="w-3 h-3 rounded bg-primary/30"></span>
+<span class="w-3 h-3 rounded bg-primary/60"></span>
+<span class="w-3 h-3 rounded bg-primary"></span>
+</div>
+</div>
+<!-- Mock Heatmap -->
+<div class="grid grid-cols-12 gap-2 h-32">
+<!-- Generated Grid Items -->
+<script>
+                                    const heatmap = document.querySelector('.grid-cols-12');
+                                    const intensities = ['bg-surface-container-high', 'bg-primary-fixed', 'bg-primary-container', 'bg-primary'];
+                                    for(let i=0; i<48; i++) {
+                                        const div = document.createElement('div');
+                                        div.className = `${intensities[Math.floor(Math.random() * intensities.length)]} rounded-sm w-full h-full opacity-80 hover:opacity-100 transition-opacity cursor-pointer`;
+                                        heatmap.appendChild(div);
+                                    }
+                                </script>
+</div>
+<div class="mt-4 flex justify-between text-label-sm text-on-surface-variant">
+<span>Aug</span>
+<span>Sep</span>
+<span>Oct</span>
+<span>Nov</span>
+</div>
+</div>
+</div>
+<!-- Background Decoration -->
+<div class="absolute -bottom-24 -right-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
+</section>
+</div>
+<!-- Footer (As per JSON) -->
+<footer class="mt-24 pt-12 border-t border-surface-variant flex flex-col md:flex-row justify-between items-center gap-gutter opacity-80 hover:opacity-100 transition-opacity">
+<div class="flex flex-col items-center md:items-start gap-2">
+<span class="font-headline-md text-headline-md font-extrabold text-primary">CrackIt</span>
+<p class="font-body-md text-body-md text-on-surface-variant">© 2024 CrackIt AI. Friendly Professional Mentor.</p>
+</div>
+<div class="flex gap-gutter">
+<a class="text-label-sm font-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Privacy Policy</a>
+<a class="text-label-sm font-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Terms of Service</a>
+<a class="text-label-sm font-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Support</a>
+</div>
+</footer>
+</main>
+</div>
+<!-- Micro-interactions Script -->
+<script>
+        // Placeholder for simple page interactivity
+        document.querySelectorAll('.report-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'SPAN') {
+                    console.log('Opening report details...');
+                }
+            });
+        });
+    </script>
+</body></html>

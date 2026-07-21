@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Interview Replay | CrackIt AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .timeline-line::before {
+            content: '';
+            position: absolute;
+            left: 19px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: repeating-linear-gradient(to bottom, transparent, transparent 4px, #e5e2dd 4px, #e5e2dd 8px);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-variant": "#e5e2dd",
+                      "surface-dim": "#dcdad5",
+                      "on-secondary-fixed-variant": "#7f2a0d",
+                      "on-tertiary-fixed-variant": "#00504c",
+                      "surface-tint": "#4454be",
+                      "on-secondary-fixed": "#3a0b00",
+                      "primary-fixed": "#dfe0ff",
+                      "on-error-container": "#93000a",
+                      "on-primary-fixed-variant": "#293aa5",
+                      "on-secondary": "#ffffff",
+                      "on-tertiary-fixed": "#00201e",
+                      "surface-container-high": "#ebe8e3",
+                      "inverse-primary": "#bbc3ff",
+                      "on-background": "#1c1c19",
+                      "on-tertiary-container": "#f3fffd",
+                      "on-primary": "#ffffff",
+                      "on-surface": "#1c1c19",
+                      "error-container": "#ffdad6",
+                      "primary-fixed-dim": "#bbc3ff",
+                      "on-secondary-container": "#722104",
+                      "on-surface-variant": "#454653",
+                      "on-primary-fixed": "#000d5f",
+                      "inverse-surface": "#31302d",
+                      "surface-container-highest": "#e5e2dd",
+                      "outline-variant": "#c6c5d5",
+                      "primary": "#4151bb",
+                      "error": "#ba1a1a",
+                      "on-error": "#ffffff",
+                      "primary-container": "#5b6bd6",
+                      "surface-container-low": "#f6f3ee",
+                      "tertiary-fixed": "#7cf6ec",
+                      "tertiary-fixed-dim": "#5dd9d0",
+                      "secondary-container": "#fd8863",
+                      "outline": "#757684",
+                      "on-tertiary": "#ffffff",
+                      "tertiary": "#006762",
+                      "on-primary-container": "#fffbff",
+                      "surface-container": "#f0ede9",
+                      "tertiary-container": "#00837c",
+                      "secondary": "#9f4122",
+                      "inverse-on-surface": "#f3f0eb",
+                      "secondary-fixed-dim": "#ffb59e",
+                      "surface-bright": "#fcf9f4",
+                      "background": "#fcf9f4",
+                      "surface": "#fcf9f4",
+                      "surface-container-lowest": "#ffffff",
+                      "secondary-fixed": "#ffdbd0"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "base": "8px",
+                      "margin-desktop": "48px",
+                      "gutter": "24px",
+                      "margin-mobile": "16px",
+                      "container-max": "1280px"
+              },
+              "fontFamily": {
+                      "body-lg": ["Inter"],
+                      "label-md": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "headline-xl": ["Plus Jakarta Sans"],
+                      "headline-md": ["Plus Jakarta Sans"],
+                      "headline-lg-mobile": ["Plus Jakarta Sans"],
+                      "headline-lg": ["Plus Jakarta Sans"],
+                      "body-md": ["Inter"]
+              },
+              "fontSize": {
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen overflow-x-hidden">
+<!-- SideNavBar Anchor -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low flex flex-col p-base space-y-2 z-50 border-r border-surface-variant/30">
+<div class="px-4 py-6 mb-4">
+<h1 class="font-headline-md text-headline-md font-extrabold text-primary">CrackIt AI</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-70 uppercase tracking-widest mt-1">Interview Mentor</p>
+</div>
+<nav class="flex-1 flex flex-col space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 rounded-xl transition-all font-label-md" href="#">
+<span class="material-symbols-outlined">dashboard</span> Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-fixed text-on-primary-fixed rounded-xl font-bold transition-transform translate-x-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">mic_external_on</span> Interviews
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 rounded-xl transition-all font-label-md" href="#">
+<span class="material-symbols-outlined">description</span> Resume Match
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 rounded-xl transition-all font-label-md" href="#">
+<span class="material-symbols-outlined">psychology</span> Project Intel
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 rounded-xl transition-all font-label-md" href="#">
+<span class="material-symbols-outlined">leaderboard</span> Analytics
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 rounded-xl transition-all font-label-md" href="#">
+<span class="material-symbols-outlined">settings</span> Settings
+            </a>
+</nav>
+<div class="mt-auto pt-6 border-t border-surface-variant/30 space-y-1">
+<div class="flex items-center gap-3 px-4 py-4 mb-4 bg-surface-container rounded-2xl">
+<img class="w-10 h-10 rounded-full border-2 border-primary-container" data-alt="A friendly professional headshot of a smiling young woman with glasses, soft studio lighting, pastel blue background, high-end photography style consistent with a mentor persona." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEcRXKI6hVVy2c0LBGEXk9h99J1pZOVcbe-n-hy5jdbXDRohu4JTmKdmPOSos7B6XnK5ww1Q5YFZSnp9O2cZ5ditr8K-2DM0c2mduJ9bhS2o9UO8ZM0OEyu5s1kLZz1yhzT-O8VZw-GpAhFwmmHRtshlZiZTijWEBaXuIZgX8KUFlYMgN8wYATJq3B4o9DUgtgSW4kWdPb1gCO1vWZDDHDjjiaG1sJ-vB64rddru4Q1vn8SGhLOtdA2A"/>
+<div class="overflow-hidden">
+<p class="font-label-md text-on-surface truncate">Alex Rivera</p>
+<p class="font-label-sm text-on-surface-variant truncate">Pro Member</p>
+</div>
+</div>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:text-primary transition-colors font-label-sm" href="#">
+<span class="material-symbols-outlined">help</span> Help Center
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:text-error transition-colors font-label-sm" href="#">
+<span class="material-symbols-outlined">logout</span> Logout
+            </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 min-h-screen p-margin-desktop">
+<!-- Header Section -->
+<header class="flex justify-between items-end mb-12">
+<div>
+<div class="flex items-center gap-2 text-primary font-label-md mb-2">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+<a class="hover:underline" href="#">Back to Sessions</a>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Senior Product Designer Role</h2>
+<p class="text-on-surface-variant font-body-md mt-1">Mock Interview with AI Mentor • June 12, 2024</p>
+</div>
+<div class="flex gap-3">
+<button class="px-6 py-3 rounded-full border border-outline-variant text-on-surface font-label-md hover:bg-surface-container transition-all flex items-center gap-2">
+<span class="material-symbols-outlined">share</span> Share Report
+                </button>
+<button class="px-6 py-3 rounded-full bg-secondary text-on-secondary font-label-md hover:opacity-90 shadow-lg shadow-secondary/20 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined">download</span> Download PDF
+                </button>
+</div>
+</header>
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Left Column: Video & Transcript -->
+<div class="col-span-12 lg:col-span-7 space-y-gutter">
+<!-- Video Player Card -->
+<section class="glass-card rounded-[32px] overflow-hidden shadow-[0_20px_50px_rgba(65,81,187,0.1)] relative group">
+<div class="aspect-video bg-on-background/5 relative">
+<img class="w-full h-full object-cover" data-alt="A split-screen view of a digital mock interview. On the left, a professional female AI avatar with a kind expression. On the right, the blurred silhouette of a candidate. The UI is clean, featuring a soft cream and indigo color palette with high-key lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmbyVdev6YF-DHwIlmX4_0ohNEBV1v6iwmurjqOQer9Tk3rB7s0qHXj1DIpVmEZsTKN9lmv5uq6kMYn0hOQmNyrNe0iZeOVxKgNGs_e9WCiXte50PwpMbvWdoa_f6d2Mi2Z_FqwzPQxxHnGZqWbP1ONkgXt6o1mrlZ23am9tsdSRERSHbmlxwf_4s4Nhuapf8YIhU4O6IX65K0T20wp6puiZTGl1qu_NIpKdwbzwra3-A5YiTJoDjHUA"/>
+<!-- Overlay Controls (Visible on Hover) -->
+<div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-6">
+<div class="flex flex-col gap-4">
+<div class="w-full h-1.5 bg-white/30 rounded-full relative overflow-hidden">
+<div class="absolute top-0 left-0 h-full w-1/3 bg-secondary rounded-full"></div>
+</div>
+<div class="flex items-center justify-between text-white">
+<div class="flex items-center gap-4">
+<button class="hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<button class="hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">replay_10</span>
+</button>
+<button class="hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">forward_10</span>
+</button>
+<span class="font-label-md">04:12 / 12:45</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="hover:scale-110 transition-transform"><span class="material-symbols-outlined">volume_up</span></button>
+<button class="hover:scale-110 transition-transform"><span class="material-symbols-outlined">settings</span></button>
+<button class="hover:scale-110 transition-transform"><span class="material-symbols-outlined">fullscreen</span></button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Transcript Section -->
+<section class="glass-card rounded-[32px] p-8 shadow-sm flex flex-col h-[500px]">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-headline-md text-on-surface">Full Transcript</h3>
+<div class="flex gap-2">
+<button class="px-4 py-2 bg-surface-container rounded-full text-on-surface font-label-sm hover:bg-surface-container-high transition-colors">Search...</button>
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto no-scrollbar pr-4 space-y-6">
+<div class="flex gap-4">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary text-sm">robot_2</span>
+</div>
+<div class="space-y-1">
+<p class="font-label-md text-primary">Interviewer (AI)</p>
+<p class="text-on-surface leading-relaxed">"Great to have you here, Alex. To start off, could you walk me through a complex design project where you had to balance user needs with strict technical constraints?"</p>
+<span class="text-[10px] text-on-surface-variant font-mono">00:05</span>
+</div>
+</div>
+<div class="flex gap-4 bg-primary-fixed/30 p-4 rounded-2xl">
+<div class="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-secondary text-sm">person</span>
+</div>
+<div class="space-y-1">
+<p class="font-label-md text-secondary">You</p>
+<p class="text-on-surface leading-relaxed">"Absolutely. One project that comes to mind is the 'EcoTrack' mobile app. We were dealing with limited API calls for real-time data, which meant we had to get creative with our caching strategy while maintaining a seamless user experience..."</p>
+<span class="text-[10px] text-on-surface-variant font-mono">00:42</span>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary text-sm">robot_2</span>
+</div>
+<div class="space-y-1">
+<p class="font-label-md text-primary">Interviewer (AI)</p>
+<p class="text-on-surface leading-relaxed">"That's interesting. How did you specifically validate that the caching didn't negatively impact the perceived accuracy of the data for the users?"</p>
+<span class="text-[10px] text-on-surface-variant font-mono">02:15</span>
+</div>
+</div>
+<!-- More transcript items would go here -->
+</div>
+</section>
+</div>
+<!-- Right Column: Timeline & Evaluation -->
+<div class="col-span-12 lg:col-span-5 space-y-gutter">
+<!-- Performance Score Card -->
+<section class="bg-surface-container rounded-[32px] p-8 flex items-center justify-between border border-surface-variant/50">
+<div>
+<p class="font-label-sm text-on-surface-variant uppercase tracking-wider">Overall Performance</p>
+<h4 class="font-headline-lg text-headline-lg text-on-surface mt-1">Excellent</h4>
+<p class="text-tertiary font-label-md mt-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">trending_up</span> Top 15% of candidates
+                        </p>
+</div>
+<div class="relative w-24 h-24">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-white" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-secondary" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="37" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center font-headline-md text-on-surface">85</div>
+</div>
+</section>
+<!-- Interview Timeline -->
+<section class="flex-1 flex flex-col">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline-md text-headline-md text-on-surface">Question Timeline</h3>
+<span class="text-on-surface-variant font-label-sm">6 Questions total</span>
+</div>
+<div class="relative timeline-line space-y-8 pl-1">
+<!-- Timeline Item 1 -->
+<div class="relative pl-12">
+<div class="absolute left-0 top-1 w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center z-10 border-4 border-background">
+<span class="material-symbols-outlined text-on-tertiary-fixed text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="glass-card rounded-2xl p-5 hover:shadow-md transition-all cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<span class="px-3 py-1 bg-tertiary/10 text-tertiary text-[10px] font-bold rounded-full uppercase">Strong Impact</span>
+<span class="font-mono text-xs text-on-surface-variant">00:05</span>
+</div>
+<h5 class="font-label-md text-on-surface group-hover:text-primary transition-colors mb-2">Experience Walkthrough</h5>
+<p class="text-sm text-on-surface-variant line-clamp-2 italic">"You clearly articulated the balance between tech and UX. Great use of the STAR method here."</p>
+</div>
+</div>
+<!-- Timeline Item 2 - Active/Selected -->
+<div class="relative pl-12">
+<div class="absolute left-0 top-1 w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center z-10 border-4 border-background ring-4 ring-primary/20">
+<span class="material-symbols-outlined text-lg">play_arrow</span>
+</div>
+<div class="bg-white border-2 border-primary rounded-2xl p-5 shadow-lg">
+<div class="flex justify-between items-start mb-2">
+<span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded-full uppercase">Needs Clarity</span>
+<span class="font-mono text-xs text-on-surface-variant">03:45</span>
+</div>
+<h5 class="font-label-md text-primary mb-2">Technical Validation</h5>
+<p class="text-sm text-on-surface mb-4">"You hesitated when explaining the metrics. Try to be more precise about the 'perceived accuracy' data points."</p>
+<div class="bg-surface-container rounded-xl p-4 space-y-3">
+<p class="font-label-sm text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">tips_and_updates</span> Mentor Tip:
+                                    </p>
+<p class="text-sm text-on-surface font-medium leading-relaxed">
+                                        "Mention specific NPS score changes or bounce rate reductions to ground your design decisions in data."
+                                    </p>
+</div>
+</div>
+</div>
+<!-- Timeline Item 3 -->
+<div class="relative pl-12">
+<div class="absolute left-0 top-1 w-10 h-10 rounded-full bg-surface-dim text-on-surface-variant flex items-center justify-center z-10 border-4 border-background">
+<span class="material-symbols-outlined text-lg">lock</span>
+</div>
+<div class="glass-card rounded-2xl p-5 opacity-60">
+<div class="flex justify-between items-start mb-2">
+<span class="px-3 py-1 bg-surface-variant text-on-surface-variant text-[10px] font-bold rounded-full uppercase">Pending</span>
+<span class="font-mono text-xs text-on-surface-variant">07:12</span>
+</div>
+<h5 class="font-label-md text-on-surface">Conflict Resolution</h5>
+<p class="text-sm text-on-surface-variant">Evaluation for this segment will unlock as you reach it in playback.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Activity Heatmap Mockup -->
+<section class="glass-card rounded-[32px] p-6 shadow-sm">
+<h4 class="font-label-md text-on-surface mb-4">Focus Intensity Heatmap</h4>
+<div class="flex items-end gap-1.5 h-16">
+<!-- Simple bars representing focus over time -->
+<div class="flex-1 bg-primary/10 h-4 rounded-full"></div>
+<div class="flex-1 bg-primary/30 h-8 rounded-full"></div>
+<div class="flex-1 bg-primary/50 h-12 rounded-full"></div>
+<div class="flex-1 bg-primary/40 h-6 rounded-full"></div>
+<div class="flex-1 bg-secondary h-16 rounded-full"></div>
+<div class="flex-1 bg-primary/60 h-10 rounded-full"></div>
+<div class="flex-1 bg-primary/20 h-4 rounded-full"></div>
+<div class="flex-1 bg-primary/10 h-3 rounded-full"></div>
+<div class="flex-1 bg-primary/70 h-14 rounded-full"></div>
+<div class="flex-1 bg-primary/40 h-7 rounded-full"></div>
+<div class="flex-1 bg-primary/10 h-2 rounded-full"></div>
+</div>
+<div class="flex justify-between mt-2 font-mono text-[10px] text-on-surface-variant">
+<span>0:00</span>
+<span>Midway</span>
+<span>12:45</span>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Micro-interaction Scripts -->
+<script>
+        // Simple hover effect for timeline items
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Toggle playback state (Visual only)
+        const playBtn = document.querySelector('.material-symbols-outlined[style*="play_arrow"]');
+        if(playBtn) {
+            playBtn.parentElement.addEventListener('click', () => {
+                playBtn.innerText = playBtn.innerText === 'play_arrow' ? 'pause' : 'play_arrow';
+            });
+        }
+    </script>
+</body></html>

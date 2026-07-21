@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#e5e2dd",
+                    "surface-dim": "#dcdad5",
+                    "on-secondary-fixed-variant": "#7f2a0d",
+                    "on-tertiary-fixed-variant": "#00504c",
+                    "surface-tint": "#4454be",
+                    "on-secondary-fixed": "#3a0b00",
+                    "primary-fixed": "#dfe0ff",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed-variant": "#293aa5",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-fixed": "#00201e",
+                    "surface-container-high": "#ebe8e3",
+                    "inverse-primary": "#bbc3ff",
+                    "on-background": "#1c1c19",
+                    "on-tertiary-container": "#f3fffd",
+                    "on-primary": "#ffffff",
+                    "on-surface": "#1c1c19",
+                    "error-container": "#ffdad6",
+                    "primary-fixed-dim": "#bbc3ff",
+                    "on-secondary-container": "#722104",
+                    "on-surface-variant": "#454653",
+                    "on-primary-fixed": "#000d5f",
+                    "inverse-surface": "#31302d",
+                    "surface-container-highest": "#e5e2dd",
+                    "outline-variant": "#c6c5d5",
+                    "primary": "#4151bb",
+                    "error": "#ba1a1a",
+                    "on-error": "#ffffff",
+                    "primary-container": "#5b6bd6",
+                    "surface-container-low": "#f6f3ee",
+                    "tertiary-fixed": "#7cf6ec",
+                    "tertiary-fixed-dim": "#5dd9d0",
+                    "secondary-container": "#fd8863",
+                    "outline": "#757684",
+                    "on-tertiary": "#ffffff",
+                    "tertiary": "#006762",
+                    "on-primary-container": "#fffbff",
+                    "surface-container": "#f0ede9",
+                    "tertiary-container": "#00837c",
+                    "secondary": "#9f4122",
+                    "inverse-on-surface": "#f3f0eb",
+                    "secondary-fixed-dim": "#ffb59e",
+                    "surface-bright": "#fcf9f4",
+                    "background": "#fcf9f4",
+                    "surface": "#fcf9f4",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed": "#ffdbd0"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "8px",
+                    "margin-desktop": "48px",
+                    "gutter": "24px",
+                    "margin-mobile": "16px",
+                    "container-max": "1280px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-xl": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #fcf9f4;
+            color: #1c1c19;
+            overflow-x: hidden;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .chart-gradient {
+            background: linear-gradient(180deg, rgba(65, 81, 187, 0.1) 0%, rgba(65, 81, 187, 0) 100%);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .heatmap-cell:hover {
+            transform: scale(1.2);
+            z-index: 10;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f0ede9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c6c5d5;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md">
+<!-- SideNavBar (from JSON) -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low dark:bg-surface-dim z-50 flex flex-col p-base space-y-2">
+<div class="px-4 py-8 mb-4">
+<h1 class="font-headline-md text-headline-md font-extrabold text-primary">CrackIt AI</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-70 uppercase tracking-widest">Interview Mentor</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined">mic_external_on</span>
+<span class="font-label-md text-label-md">Interviews</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-label-md text-label-md">Resume Match</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-label-md text-label-md">Project Intel</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-fixed text-on-primary-fixed rounded-xl font-bold translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">leaderboard</span>
+<span class="font-label-md text-label-md">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant pt-4 pb-6 px-2">
+<button class="w-full bg-secondary text-on-secondary py-3 rounded-full font-bold mb-4 shadow-lg hover:scale-[1.02] active:scale-95 transition-transform">
+                Start Practice
+            </button>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-sm text-label-sm">Help Center</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-sm text-label-sm">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 p-margin-desktop min-h-screen">
+<!-- Header -->
+<header class="flex justify-between items-end mb-10">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-1">Growth Insights</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Welcome back! You're in the top 15% of candidates this week.</p>
+</div>
+<div class="flex gap-4">
+<div class="bg-surface-container rounded-full px-4 py-2 flex items-center gap-2 border border-outline-variant/30">
+<span class="material-symbols-outlined text-primary text-sm">calendar_today</span>
+<span class="font-label-md text-label-md">Last 30 Days</span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-full font-bold shadow-md flex items-center gap-2">
+<span class="material-symbols-outlined text-xl">download</span>
+                    Export PDF
+                </button>
+</div>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Readiness Trend - Large Hero Card -->
+<section class="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-[24px] p-8 shadow-[0_10px_30px_rgba(65,81,187,0.08)] relative overflow-hidden h-[400px]">
+<div class="flex justify-between items-start mb-8 relative z-10">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Placement Readiness</h3>
+<p class="font-label-md text-label-md text-tertiary font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">trending_up</span> +12.4% vs last month
+                        </p>
+</div>
+<div class="flex gap-3">
+<span class="flex items-center gap-1 text-label-sm text-on-surface-variant">
+<span class="w-3 h-3 rounded-full bg-primary"></span> Readiness
+                        </span>
+<span class="flex items-center gap-1 text-label-sm text-on-surface-variant">
+<span class="w-3 h-3 rounded-full bg-secondary-container"></span> Market Average
+                        </span>
+</div>
+</div>
+<!-- Custom SVG Chart Visualization -->
+<div class="absolute bottom-0 left-0 w-full h-64 px-8 pb-8">
+<svg class="w-full h-full drop-shadow-xl" preserveaspectratio="none" viewbox="0 0 800 200">
+<defs>
+<lineargradient id="readyGrad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="5%" stop-color="#4151bb" stop-opacity="0.3"></stop>
+<stop offset="95%" stop-color="#4151bb" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<!-- Area -->
+<path d="M0,150 C100,140 200,160 300,120 S400,40 500,60 S600,100 700,50 S800,30 800,30 V200 H0 Z" fill="url(#readyGrad)"></path>
+<!-- Market Average Line -->
+<path d="M0,120 L100,118 L200,122 L300,115 L400,110 L500,108 L600,105 L700,102 L800,100" fill="none" stroke="#fd8863" stroke-dasharray="8,4" stroke-width="2"></path>
+<!-- Readiness Line -->
+<path d="M0,150 C100,140 200,160 300,120 S400,40 500,60 S600,100 700,50 S800,30 800,30" fill="none" stroke="#4151bb" stroke-linecap="round" stroke-width="4"></path>
+<!-- Data Points -->
+<circle cx="300" cy="120" fill="#4151bb" r="6"></circle>
+<circle cx="500" cy="60" fill="#4151bb" r="6"></circle>
+<circle cx="800" cy="30" fill="#4151bb" r="8" stroke="white" stroke-width="3"></circle>
+</svg>
+<div class="flex justify-between mt-4 text-label-sm text-on-surface-variant px-2">
+<span>Week 1</span><span>Week 2</span><span>Week 3</span><span>Week 4</span><span>Week 5</span><span>Present</span>
+</div>
+</div>
+</section>
+<!-- Quick Stats Summary -->
+<section class="col-span-12 lg:col-span-4 flex flex-col gap-gutter">
+<div class="bg-tertiary-container rounded-[24px] p-6 text-on-tertiary-container flex justify-between items-center relative overflow-hidden">
+<div class="relative z-10">
+<p class="font-label-md text-label-md mb-1 opacity-90">Overall Score</p>
+<h4 class="font-headline-xl text-headline-xl">84%</h4>
+<div class="mt-2 inline-flex items-center bg-white/20 rounded-full px-2 py-0.5 text-label-sm">
+<span class="material-symbols-outlined text-xs">arrow_upward</span> Top 5%
+                        </div>
+</div>
+<div class="w-24 h-24 relative z-10">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+<path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="3"></path>
+<path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="white" stroke-dasharray="84, 100" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-10">
+<span class="material-symbols-outlined text-[120px]">stars</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-[24px] p-6 shadow-[0_10px_30px_rgba(65,81,187,0.08)] flex-1">
+<h5 class="font-label-md text-label-md text-on-surface-variant mb-4 flex items-center justify-between">
+                        Skill Breakdown
+                        <span class="material-symbols-outlined text-primary text-xl">info</span>
+</h5>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between text-label-sm mb-1">
+<span>Problem Solving</span>
+<span>92%</span>
+</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full w-[92%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-label-sm mb-1">
+<span>Communication</span>
+<span>78%</span>
+</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-secondary-container rounded-full w-[78%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-label-sm mb-1">
+<span>System Design</span>
+<span>65%</span>
+</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-tertiary rounded-full w-[65%]"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Activity Heatmap -->
+<section class="col-span-12 bg-surface-container-lowest rounded-[24px] p-8 shadow-[0_10px_30px_rgba(65,81,187,0.08)]">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-headline-md text-on-surface">Practice Activity</h3>
+<div class="flex items-center gap-2 text-label-sm text-on-surface-variant">
+<span>Less</span>
+<div class="flex gap-1">
+<div class="w-3 h-3 rounded-[3px] bg-surface-container"></div>
+<div class="w-3 h-3 rounded-[3px] bg-tertiary-fixed-dim"></div>
+<div class="w-3 h-3 rounded-[3px] bg-tertiary-fixed"></div>
+<div class="w-3 h-3 rounded-[3px] bg-tertiary"></div>
+</div>
+<span>More</span>
+</div>
+</div>
+<div class="overflow-x-auto pb-2">
+<div class="inline-grid grid-rows-7 grid-flow-col gap-1.5 min-w-[900px]">
+<!-- Week Labels (simplified grid implementation) -->
+<script>
+                            const container = document.currentScript.parentElement;
+                            const colors = ['bg-surface-container', 'bg-tertiary-fixed-dim', 'bg-tertiary-fixed', 'bg-tertiary'];
+                            for (let i = 0; i < 364; i++) {
+                                const level = Math.floor(Math.random() * 4);
+                                const cell = document.createElement('div');
+                                cell.className = `w-[14px] h-[14px] rounded-[3px] transition-all cursor-pointer heatmap-cell ${colors[level]}`;
+                                cell.title = `Activity level: ${level}`;
+                                container.appendChild(cell);
+                            }
+                        </script>
+</div>
+</div>
+</section>
+<!-- Score Trend Charts -->
+<section class="col-span-12 lg:col-span-6 bg-surface-container-lowest rounded-[24px] p-8 shadow-[0_10px_30px_rgba(65,81,187,0.08)]">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-6">Vertical Benchmarks</h3>
+<div class="space-y-6">
+<!-- Interview Trend -->
+<div class="flex items-center gap-6">
+<div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">mic</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between mb-2">
+<span class="font-label-md text-label-md">Interview Performance</span>
+<span class="font-bold text-primary">88%</span>
+</div>
+<div class="relative h-12 flex items-end gap-1">
+<div class="bg-primary/20 hover:bg-primary transition-colors w-full h-[40%] rounded-t-sm"></div>
+<div class="bg-primary/20 hover:bg-primary transition-colors w-full h-[60%] rounded-t-sm"></div>
+<div class="bg-primary/20 hover:bg-primary transition-colors w-full h-[55%] rounded-t-sm"></div>
+<div class="bg-primary/20 hover:bg-primary transition-colors w-full h-[75%] rounded-t-sm"></div>
+<div class="bg-primary/20 hover:bg-primary transition-colors w-full h-[88%] rounded-t-sm"></div>
+<div class="bg-primary hover:bg-primary transition-colors w-full h-[92%] rounded-t-sm"></div>
+</div>
+</div>
+</div>
+<!-- Resume Match -->
+<div class="flex items-center gap-6">
+<div class="w-16 h-16 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-3xl">description</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between mb-2">
+<span class="font-label-md text-label-md">Resume Score (ATS)</span>
+<span class="font-bold text-secondary">72%</span>
+</div>
+<div class="relative h-12 flex items-end gap-1">
+<div class="bg-secondary-container/20 hover:bg-secondary-container transition-colors w-full h-[30%] rounded-t-sm"></div>
+<div class="bg-secondary-container/20 hover:bg-secondary-container transition-colors w-full h-[45%] rounded-t-sm"></div>
+<div class="bg-secondary-container/20 hover:bg-secondary-container transition-colors w-full h-[80%] rounded-t-sm"></div>
+<div class="bg-secondary-container/20 hover:bg-secondary-container transition-colors w-full h-[65%] rounded-t-sm"></div>
+<div class="bg-secondary-container/20 hover:bg-secondary-container transition-colors w-full h-[70%] rounded-t-sm"></div>
+<div class="bg-secondary-container hover:bg-secondary-container transition-colors w-full h-[72%] rounded-t-sm"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Weak/Strong Topics -->
+<section class="col-span-12 lg:col-span-6 bg-surface-container-lowest rounded-[24px] p-8 shadow-[0_10px_30px_rgba(65,81,187,0.08)]">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-6">Topic Mastery</h3>
+<div class="grid grid-cols-2 gap-gutter">
+<!-- Strong Topics -->
+<div>
+<h4 class="font-label-md text-label-md text-tertiary uppercase tracking-wider mb-4">Top Strengths</h4>
+<div class="space-y-3">
+<div class="bg-tertiary-fixed/30 px-4 py-3 rounded-xl flex items-center justify-between border border-tertiary-fixed-dim/20">
+<span class="font-body-md">Data Structures</span>
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="bg-tertiary-fixed/30 px-4 py-3 rounded-xl flex items-center justify-between border border-tertiary-fixed-dim/20">
+<span class="font-body-md">Behavioral</span>
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="bg-tertiary-fixed/30 px-4 py-3 rounded-xl flex items-center justify-between border border-tertiary-fixed-dim/20">
+<span class="font-body-md">Algorithms</span>
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+</div>
+<!-- Improvement Areas -->
+<div>
+<h4 class="font-label-md text-label-md text-secondary uppercase tracking-wider mb-4">Growth Areas</h4>
+<div class="space-y-3">
+<div class="bg-secondary-fixed/30 px-4 py-3 rounded-xl flex items-center justify-between border border-secondary-fixed-dim/20">
+<span class="font-body-md">Cloud Architecture</span>
+<span class="material-symbols-outlined text-secondary">trending_up</span>
+</div>
+<div class="bg-secondary-fixed/30 px-4 py-3 rounded-xl flex items-center justify-between border border-secondary-fixed-dim/20">
+<span class="font-body-md">Unit Testing</span>
+<span class="material-symbols-outlined text-secondary">trending_up</span>
+</div>
+<div class="bg-secondary-fixed/30 px-4 py-3 rounded-xl flex items-center justify-between border border-secondary-fixed-dim/20">
+<span class="font-body-md">Security Basics</span>
+<span class="material-symbols-outlined text-secondary">trending_up</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 bg-surface-container rounded-2xl p-4 flex items-center gap-4">
+<img class="w-12 h-12 rounded-full border-2 border-white shadow-sm" data-alt="A friendly professional mentor avatar with a warm smile, wearing modern casual business attire, against a soft blurred office background with mint and periwinkle accents. High quality digital portrait photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiiNXiQlsE0oQ2HYfv54NB40tFqLD0SLIiHhBx7ihhl-QoImSynRFZmuWiG8F321d3ANagucoaZ99X4NR1gI9dTTAHAFHzs2UmT96oc3xKcS1OqB3ioHsGqntbUaTjw7cmxB-l8OhXi1k5XeacCeY7OpYlzdt7TcRWGpbCU9Kgo-tWXxRZFs27VNseNyuleL4D1rWFuB39baaCVXDz7If3-EkuSMfbBkX8nMhH2c4rHwGvaow-AJk28g"/>
+<p class="font-body-md text-on-surface-variant italic">"You're making great strides in Algorithms. Focus 20% more on Cloud patterns this week to reach Elite status."</p>
+</div>
+</section>
+</div>
+<!-- Floating Action Component - Insight Card -->
+<div class="mt-gutter flex flex-col md:flex-row gap-gutter">
+<div class="flex-1 glass-card p-8 rounded-[32px] flex items-center gap-8 shadow-xl">
+<div class="bg-primary w-24 h-24 rounded-[28px] flex-shrink-0 flex items-center justify-center shadow-lg shadow-primary/30">
+<span class="material-symbols-outlined text-on-primary text-5xl">auto_awesome</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-primary">AI Career Prediction</h3>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mt-2">Based on your growth trajectory, you are highly likely to secure a <strong>Senior Engineer</strong> role at a Tier-1 firm within the next 45 days. Keep up the consistency!</p>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="mt-20 border-t border-outline-variant/30 py-12 flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex flex-col gap-2">
+<span class="font-headline-md text-headline-md font-extrabold text-primary opacity-50">CrackIt</span>
+<p class="font-body-md text-body-md text-on-surface-variant">© 2024 CrackIt AI. Friendly Professional Mentor.</p>
+</div>
+<div class="flex gap-8">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Support</a>
+</div>
+</footer>
+</main>
+<!-- Background Decoration -->
+<div class="fixed top-0 right-0 -z-10 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="fixed bottom-0 left-64 -z-10 w-[400px] h-[400px] bg-tertiary/5 rounded-full blur-[100px] pointer-events-none"></div>
+<script>
+        // Micro-interaction for the "Start Practice" button
+        const startBtn = document.querySelector('button');
+        startBtn.addEventListener('click', () => {
+            startBtn.classList.add('scale-95');
+            setTimeout(() => {
+                startBtn.classList.remove('scale-95');
+            }, 150);
+        });
+
+        // Simple animation for the heatmap cells on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const cells = document.querySelectorAll('.heatmap-cell');
+            cells.forEach((cell, index) => {
+                cell.style.opacity = '0';
+                cell.style.transform = 'translateY(10px)';
+                setTimeout(() => {
+                    cell.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    cell.style.opacity = '1';
+                    cell.style.transform = 'translateY(0)';
+                }, index * 2);
+            });
+        });
+    </script>
+</body></html>
