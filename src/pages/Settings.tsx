@@ -1,51 +1,42 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 
 export default function Settings() {
   const navigate = useNavigate();
-  const [theme, setTheme] = useState('light');
-  const [lang, setLang] = useState('English (US)');
+  const { showToast } = useToast();
   
-  const [micTestActive, setMicTestActive] = useState(false);
-  const [micLevel, setMicLevel] = useState(66); // 2/3 level
+  const [micTestActive, setMicTestActive] = useState<boolean>(false);
+  const [micLevel, setMicLevel] = useState<number>(66);
   
-  const [reminders, setReminders] = useState(true);
-  const [reports, setReports] = useState(true);
-  const [marketing, setMarketing] = useState(false);
-
-  const toggleTheme = (mode) => {
-    setTheme(mode);
-    if (mode === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  };
+  const [reminders, setReminders] = useState<boolean>(true);
+  const [reports, setReports] = useState<boolean>(true);
+  const [marketing, setMarketing] = useState<boolean>(false);
 
   const handleTestMic = () => {
     setMicTestActive(true);
     let counter = 0;
     const interval = setInterval(() => {
-      setMicLevel(Math.floor(Math.random() * 50) + 40); // bounce between 40 and 90
+      setMicLevel(Math.floor(Math.random() * 50) + 40);
       counter++;
       if (counter > 10) {
         clearInterval(interval);
         setMicTestActive(false);
         setMicLevel(66);
-        alert("Microphone test complete! Audio levels are normal.");
+        showToast("Microphone test complete! Audio levels are normal.", "success");
       }
     }, 200);
   };
 
   const handleDeleteAccount = () => {
     if (confirm("WARNING: Are you absolutely sure you want to delete your account? This action is irreversible.")) {
-      alert("Account successfully deleted. Redirecting to landing page.");
+      showToast("Account deleted. Redirecting...", "info");
       navigate('/');
     }
   };
 
   return (
-    <div className="p-margin-mobile md:p-margin-desktop min-h-screen text-left bg-surface-bright selection:bg-primary-fixed">
+    <div className="px-margin-mobile md:px-margin-desktop pb-margin-mobile md:pb-margin-desktop min-h-screen text-left bg-surface-bright selection:bg-primary-fixed">
       <div className="max-w-4xl mx-auto">
         
         {/* Header */}
@@ -56,72 +47,6 @@ export default function Settings() {
 
         <div className="grid grid-cols-1 gap-gutter">
           
-          {/* Appearance & Theme Section */}
-          <section className="settings-card bg-surface-container-lowest rounded-2xl p-6 md:p-8 shadow-[0_10px_30px_rgba(65,81,187,0.05)] border border-transparent focus-within:border-primary/45 transition-all">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-primary shrink-0">
-                <span className="material-symbols-outlined">palette</span>
-              </div>
-              <div>
-                <h3 className="font-headline-md text-base font-bold text-on-surface">Appearance</h3>
-                <p className="text-on-surface-variant text-xs">Customize how CrackIt AI looks for you.</p>
-              </div>
-            </div>
-            
-            <div className="space-y-6">
-              {/* Theme Selection */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex flex-col">
-                  <span className="font-label-md text-sm font-semibold">Theme Selection</span>
-                  <span className="text-on-surface-variant text-xs">Switch between light and dark modes.</span>
-                </div>
-                
-                <div className="flex bg-surface-container p-1 rounded-full self-start sm:self-auto">
-                  <button 
-                    onClick={() => toggleTheme('light')}
-                    className={`px-6 py-2 rounded-full font-label-md text-xs font-semibold transition-all ${
-                      theme === 'light' 
-                        ? 'bg-surface-container-lowest shadow-sm text-primary' 
-                        : 'text-on-surface-variant hover:text-primary'
-                    }`}
-                  >
-                    Light
-                  </button>
-                  <button 
-                    onClick={() => toggleTheme('dark')}
-                    className={`px-6 py-2 rounded-full font-label-md text-xs font-semibold transition-all ${
-                      theme === 'dark' 
-                        ? 'bg-surface-container-lowest shadow-sm text-primary' 
-                        : 'text-on-surface-variant hover:text-primary'
-                    }`}
-                  >
-                    Dark
-                  </button>
-                </div>
-              </div>
-              
-              {/* Interface Language */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex flex-col">
-                  <span className="font-label-md text-sm font-semibold">Interface Language</span>
-                  <span className="text-on-surface-variant text-xs">Preferred language for labels and tools.</span>
-                </div>
-                
-                <select 
-                  value={lang}
-                  onChange={(e) => setLang(e.target.value)}
-                  className="bg-surface-container border-none rounded-xl px-4 py-2.5 font-label-md text-sm text-on-surface min-w-[160px] focus:ring-2 focus:ring-primary/20 cursor-pointer outline-none"
-                >
-                  <option>English (US)</option>
-                  <option>Spanish</option>
-                  <option>French</option>
-                  <option>German</option>
-                  <option>Japanese</option>
-                </select>
-              </div>
-            </div>
-          </section>
-
           {/* Hardware & Testing Section */}
           <section className="settings-card bg-surface-container-lowest rounded-2xl p-6 md:p-8 shadow-[0_10px_30px_rgba(65,81,187,0.05)] border border-transparent focus-within:border-primary/45 transition-all">
             <div className="flex items-center gap-4 mb-8">
@@ -155,7 +80,7 @@ export default function Settings() {
                 <button 
                   onClick={handleTestMic}
                   disabled={micTestActive}
-                  className="w-full py-2.5 rounded-xl border border-primary text-primary font-label-md text-xs font-bold hover:bg-primary-fixed/30 transition-all disabled:opacity-50"
+                  className="w-full py-2.5 rounded-xl border border-primary text-primary font-label-md text-xs font-bold hover:bg-primary-fixed/30 transition-all disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-primary"
                 >
                   {micTestActive ? "Testing Mic..." : "Test Mic"}
                 </button>
@@ -168,12 +93,20 @@ export default function Settings() {
                     <span className="material-symbols-outlined text-primary">photo_camera</span>
                     <span>Camera</span>
                   </span>
-                  <button onClick={() => alert("Simulation: Camera devices list toggled.")} className="text-primary font-label-sm text-xs font-bold hover:underline">Change Device</button>
+                  <button 
+                    onClick={() => showToast("Camera devices list toggled.", "info")} 
+                    className="text-primary font-label-sm text-xs font-bold hover:underline focus:outline-none focus:ring-1 focus:ring-primary rounded"
+                  >
+                    Change Device
+                  </button>
                 </div>
                 <div className="aspect-video rounded-xl bg-surface-dim overflow-hidden relative group border border-surface-variant/30">
                   <img 
                     className="w-full h-full object-cover opacity-60" 
                     alt="Webcam placeholder preview" 
+                    loading="lazy"
+                    decoding="async"
+                    onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=60'; }}
                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuC40r2_YifydW27cEXJyU-9ypD1VkSoQaj8SLu34Ef1aO0Nu1aqkcGqFA-VMuWSpGRAiHI1qtSn4l_ZqJNZDjHDRLeM52RJ1ic_KcWrKFtU_ol3uQfZvE4ro_IhS1cGzJmRFWSObOBDl-nSusgx7J08zckfJ8d7OoJOztGk-UOF3FuRd6B1JmvmAza3gUv8AWMBgHnP1z_xgiYw_7yQ4ba88YW0l2vJxuAhO1tEHbosFIXAVpIkrHiYig"
                   />
                   <div className="absolute inset-0 flex items-center justify-center cursor-pointer">
@@ -266,7 +199,7 @@ export default function Settings() {
               </div>
               <button 
                 onClick={handleDeleteAccount}
-                className="px-8 py-3 bg-error text-on-error rounded-full font-label-md text-xs font-semibold hover:brightness-110 active:scale-95 transition-all w-full md:w-auto text-center"
+                className="px-8 py-3 bg-error text-on-error rounded-full font-label-md text-xs font-semibold hover:brightness-110 active:scale-95 transition-all w-full md:w-auto text-center focus:outline-none focus:ring-2 focus:ring-error"
               >
                 Delete Account
               </button>
@@ -278,7 +211,7 @@ export default function Settings() {
         <footer className="mt-20 border-t border-outline-variant/30 py-12 flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
           <div className="flex flex-col gap-2">
             <span className="font-headline-md text-headline-md font-extrabold text-primary opacity-50">CrackIt</span>
-            <p className="font-body-md text-body-md text-on-surface-variant">© 2024 CrackIt AI. Friendly Professional Mentor.</p>
+            <p className="font-body-md text-body-md text-on-surface-variant">© 2026 CrackIt AI. Friendly Professional Mentor.</p>
           </div>
           <div className="flex gap-8">
             <a className="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
@@ -290,8 +223,9 @@ export default function Settings() {
 
       {/* FAB Support (Contextual) */}
       <button 
-        onClick={() => alert("Simulation: Support Chat widget opened.")}
-        className="fixed bottom-8 right-8 w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform active:scale-95 z-50 text-white"
+        onClick={() => showToast("Support Chat widget opened.", "info")}
+        className="fixed bottom-8 right-8 w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform active:scale-95 z-50 text-white focus:outline-none focus:ring-2 focus:ring-primary"
+        aria-label="Support Chat"
       >
         <span className="material-symbols-outlined">chat_bubble</span>
       </button>

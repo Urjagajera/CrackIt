@@ -1,12 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mockProjectIntel } from '../utils/mockData';
+import { useToast } from '../context/ToastContext';
+import { ProjectIntelItem } from '../types';
+
+interface QuestionItem {
+  id: number;
+  type: string;
+  bgClass: string;
+  hoverClass: string;
+  question: string;
+}
 
 export default function ProjectIntel() {
   const navigate = useNavigate();
-  const [projects, setProjects] = useState(mockProjectIntel);
-  const [activeProject, setActiveProject] = useState(mockProjectIntel[0]);
-  const [questions, setQuestions] = useState([
+  const { showToast } = useToast();
+  const [projects] = useState<ProjectIntelItem[]>(mockProjectIntel);
+  const [activeProject] = useState<ProjectIntelItem>(mockProjectIntel[0]);
+  const [questions, setQuestions] = useState<QuestionItem[]>([
     {
       id: 1,
       type: "System Design",
@@ -29,16 +40,15 @@ export default function ProjectIntel() {
       question: "Explain your disaster recovery strategy for the PostgreSQL database in the event of a region failure."
     }
   ]);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState({ entity: 85, arch: 42 });
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [uploadProgress, setUploadProgress] = useState<{ entity: number; arch: number }>({ entity: 85, arch: 42 });
 
-  const handleUpload = (e) => {
-    const file = e.target.files[0];
+  const handleUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
       setIsUploading(true);
       setUploadProgress({ entity: 0, arch: 0 });
       
-      // Simulate analysis steps
       const interval = setInterval(() => {
         setUploadProgress(prev => {
           if (prev.entity < 85) {
@@ -48,7 +58,7 @@ export default function ProjectIntel() {
           } else {
             clearInterval(interval);
             setIsUploading(false);
-            alert("Project document uploaded and analyzed! Generated 3 predictive questions.");
+            showToast("Project document uploaded and analyzed! Generated 3 predictive questions.", "success");
             return { entity: 85, arch: 42 };
           }
         });
@@ -59,21 +69,22 @@ export default function ProjectIntel() {
   const handleAddQuestion = () => {
     const customQ = prompt("Enter your custom question related to this project architecture:");
     if (customQ) {
-      setQuestions([
-        ...questions,
+      setQuestions(prev => [
+        ...prev,
         {
-          id: questions.length + 1,
+          id: prev.length + 1,
           type: "Custom",
           bgClass: "bg-primary-fixed text-primary group-hover:bg-white/20 group-hover:text-white",
           hoverClass: "hover:bg-primary-container hover:text-on-primary-container",
           question: `"${customQ}"`
         }
       ]);
+      showToast("Custom project question added.", "info");
     }
   };
 
   return (
-    <div className="p-margin-mobile md:p-margin-desktop min-h-screen text-left bg-background selection:bg-primary-fixed">
+    <div className="px-margin-mobile md:px-margin-desktop pb-margin-mobile md:pb-margin-desktop min-h-screen text-left bg-background selection:bg-primary-fixed">
       {/* Header Section */}
       <header className="mb-12 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
         <div>
@@ -83,8 +94,8 @@ export default function ProjectIntel() {
           </p>
         </div>
         <button 
-          onClick={() => alert("Simulation: Displaying recent project upload history log.")}
-          className="flex items-center gap-2 px-6 py-3 border border-outline-variant rounded-full text-on-surface font-label-md hover:bg-surface-container transition-colors"
+          onClick={() => showToast("Displaying recent project upload history log.", "info")}
+          className="flex items-center gap-2 px-6 py-3 border border-outline-variant rounded-full text-on-surface font-label-md hover:bg-surface-container transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
         >
           <span className="material-symbols-outlined">history</span>
           <span>Recent History</span>
@@ -98,7 +109,7 @@ export default function ProjectIntel() {
         <section className="col-span-12 lg:col-span-4 flex flex-col gap-gutter">
           
           {/* File Upload Zone */}
-          <div className="bg-surface-container-lowest rounded-[24px] p-8 custom-shadow border border-surface-variant/30 flex flex-col items-center justify-center text-center group cursor-pointer border-dashed border-2 hover:border-primary/50 transition-all min-h-[300px]">
+          <div className="bg-surface-container-lowest rounded-[24px] p-8 custom-shadow border border-surface-variant/30 flex flex-col items-center justify-center text-center group border-dashed border-2 hover:border-primary/50 transition-all min-h-[300px]">
             <div className="w-16 h-16 bg-primary-fixed rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
               <span className="material-symbols-outlined text-primary text-[32px]">cloud_upload</span>
             </div>
@@ -110,7 +121,7 @@ export default function ProjectIntel() {
               type="file"
               onChange={handleUpload}
             />
-            <label className="bg-primary text-on-primary px-8 py-3 rounded-full font-bold cursor-pointer hover:shadow-lg transition-all active:scale-95" htmlFor="project-upload">
+            <label className="bg-primary text-on-primary px-8 py-3 rounded-full font-bold cursor-pointer hover:shadow-lg transition-all active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary" htmlFor="project-upload">
               {isUploading ? "Uploading..." : "Select File"}
             </label>
           </div>
@@ -193,8 +204,6 @@ export default function ProjectIntel() {
 
             {/* Architecture Overview Visualization Placeholder */}
             <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-surface-container-low border border-outline-variant flex items-center justify-center">
-              <div className="absolute inset-0 opacity-10 pointer-events-none"></div>
-              
               <div className="text-center z-10 px-8">
                 <div className="mb-4 flex justify-center">
                   <div className="relative">
@@ -207,14 +216,6 @@ export default function ProjectIntel() {
                 <h4 className="font-headline-md text-headline-md text-base font-bold mb-2">Generating Architectural Visualizer</h4>
                 <p className="text-label-md text-on-surface-variant text-xs">Mapping service dependencies and data flow patterns...</p>
               </div>
-
-              {/* Backdrop placeholder image */}
-              <div className="absolute inset-0 -z-0 opacity-20">
-                <div 
-                  className="w-full h-full bg-cover bg-center" 
-                  style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBwmGbDF51fLDzm0COAj0zGZgOqWoYzxLqHhbmLkZapGYUTtRprIh_LRUnsq8H12PEmOBpXouaL58BO8VfcsTxy1Mk6-wbv1txp4aYZZ3c6wSyvi_YPVGJlDrLFokiLRSke5xMEdUf6dONja4sRB1NRXLwh56WmkaPwP7aguDjs-sUwngc-Z2gPGJk6vnQKwXy2XLJ1Gtybqk0-ONYVN9HfZJ-wh2psJR0LOSXXqtC4dE65bD7DcX32HA')" }}
-                ></div>
-              </div>
             </div>
           </div>
 
@@ -224,10 +225,11 @@ export default function ProjectIntel() {
             
             <div className="grid md:grid-cols-2 gap-4">
               {questions.map((q) => (
-                <div 
+                <button
                   key={q.id}
-                  onClick={() => alert(`Reviewing model answer for: ${q.question}`)}
-                  className={`bg-surface-container-lowest p-6 rounded-[24px] border border-surface-variant/30 custom-shadow flex flex-col justify-between group transition-all cursor-pointer ${q.hoverClass}`}
+                  type="button"
+                  onClick={() => showToast(`Reviewing model answer for: ${q.question}`, "info")}
+                  className={`bg-surface-container-lowest p-6 rounded-[24px] border border-surface-variant/30 custom-shadow flex flex-col justify-between group transition-all cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-primary ${q.hoverClass}`}
                 >
                   <div>
                     <div className="flex items-start justify-between mb-4">
@@ -241,17 +243,18 @@ export default function ProjectIntel() {
                     <span className="text-label-sm font-bold text-xs">View Model Answer</span>
                     <span className="material-symbols-outlined text-body-md">arrow_forward</span>
                   </div>
-                </div>
+                </button>
               ))}
               
               {/* Add Custom Question Button */}
-              <div 
+              <button 
+                type="button"
                 onClick={handleAddQuestion}
-                className="border-2 border-dashed border-outline-variant p-6 rounded-[24px] flex flex-col items-center justify-center text-on-surface-variant hover:border-primary/50 hover:bg-primary-fixed/20 transition-all cursor-pointer group min-h-[170px]"
+                className="border-2 border-dashed border-outline-variant p-6 rounded-[24px] flex flex-col items-center justify-center text-on-surface-variant hover:border-primary/50 hover:bg-primary-fixed/20 transition-all cursor-pointer group min-h-[170px] focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <span className="material-symbols-outlined text-[32px] mb-2 group-hover:scale-110 transition-transform">add_circle</span>
                 <span className="text-label-md font-bold text-sm">Add Custom Question</span>
-              </div>
+              </button>
             </div>
           </div>
         </section>

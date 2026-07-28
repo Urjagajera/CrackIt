@@ -1,31 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { mockUserProfile } from '../utils/mockData';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { mockUserProfile, mockRecommendedTopics, mockTopicsNeedingPreparation } from '../utils/mockData';
+import { useToast } from '../context/ToastContext';
+import HeatmapChart from '../components/HeatmapChart';
 
 export default function Analytics() {
+  const navigate = useNavigate();
+  const { showToast } = useToast();
   const profile = mockUserProfile;
-  const [heatmapCells, setHeatmapCells] = useState([]);
-
-  useEffect(() => {
-    // Generate 364 cells for the practice activity heatmap
-    const cells = [];
-    const colors = ['bg-surface-container', 'bg-tertiary-fixed-dim', 'bg-tertiary-fixed', 'bg-tertiary'];
-    for (let i = 0; i < 364; i++) {
-      const level = Math.floor(Math.random() * 4);
-      cells.push({
-        id: i,
-        level,
-        colorClass: colors[level]
-      });
-    }
-    setHeatmapCells(cells);
-  }, []);
 
   const handleExport = () => {
-    alert("Export PDF: Generating performance analytics document (Simulation).");
+    showToast("Generating performance analytics PDF document...", "info");
   };
 
   return (
-    <div className="p-margin-mobile md:p-margin-desktop min-h-screen text-left bg-background selection:bg-primary-fixed relative">
+    <div className="px-margin-mobile md:px-margin-desktop pb-margin-mobile md:pb-margin-desktop min-h-screen text-left bg-background selection:bg-primary-fixed relative overflow-hidden">
       {/* Header Section */}
       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-10">
         <div>
@@ -36,15 +25,19 @@ export default function Analytics() {
         </div>
         
         <div className="flex gap-4 w-full sm:w-auto">
-          <div className="bg-surface-container rounded-full px-4 py-2 flex items-center gap-2 border border-outline-variant/30 text-sm cursor-pointer select-none">
+          <button 
+            type="button"
+            onClick={() => showToast("Date filter: Last 30 Days selected.", "info")}
+            className="bg-surface-container rounded-full px-4 py-2 flex items-center gap-2 border border-outline-variant/30 text-sm cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-primary"
+          >
             <span className="material-symbols-outlined text-primary text-sm">calendar_today</span>
             <span className="font-label-md font-semibold">Last 30 Days</span>
             <span className="material-symbols-outlined text-sm">expand_more</span>
-          </div>
+          </button>
           
           <button 
             onClick={handleExport}
-            className="bg-primary text-on-primary px-6 py-2.5 rounded-full font-bold shadow-md flex items-center gap-2 text-sm hover:opacity-95 active:scale-95 transition-all"
+            className="bg-primary text-on-primary px-6 py-2.5 rounded-full font-bold shadow-md flex items-center gap-2 text-sm hover:opacity-95 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <span className="material-symbols-outlined text-lg">download</span>
             <span>Export PDF</span>
@@ -86,16 +79,10 @@ export default function Analytics() {
                 </linearGradient>
               </defs>
               
-              {/* Area path */}
               <path d="M0,150 C100,140 200,160 300,120 S400,40 500,60 S600,100 700,50 S800,30 800,30 V200 H0 Z" fill="url(#readyGrad)"></path>
-              
-              {/* Market Average Line */}
               <path d="M0,120 L100,118 L200,122 L300,115 L400,110 L500,108 L600,105 L700,102 L800,100" fill="none" stroke="#fd8863" strokeDasharray="8,4" strokeWidth="2"></path>
-              
-              {/* Readiness Line */}
               <path d="M0,150 C100,140 200,160 300,120 S400,40 500,60 S600,100 700,50 S800,30 800,30" fill="none" stroke="#4151bb" strokeLinecap="round" strokeWidth="4"></path>
               
-              {/* Data Points */}
               <circle cx="300" cy="120" fill="#4151bb" r="6"></circle>
               <circle cx="500" cy="60" fill="#4151bb" r="6"></circle>
               <circle cx="800" cy="30" fill="#4151bb" r="8" stroke="white" strokeWidth="3"></circle>
@@ -109,7 +96,6 @@ export default function Analytics() {
 
         {/* Quick Stats Summary (4 Columns) */}
         <section className="col-span-12 lg:col-span-4 flex flex-col gap-gutter">
-          {/* Overall score card */}
           <div className="bg-tertiary-container rounded-[24px] p-6 text-on-tertiary-container flex justify-between items-center relative overflow-hidden">
             <div className="relative z-10">
               <p className="font-label-md text-label-md mb-1 opacity-90 text-sm font-semibold">Overall Score</p>
@@ -124,10 +110,6 @@ export default function Analytics() {
                 <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="3"></path>
                 <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="white" strokeDasharray="84, 100" strokeLinecap="round" strokeWidth="3"></path>
               </svg>
-            </div>
-            
-            <div className="absolute -right-4 -bottom-4 opacity-10">
-              <span className="material-symbols-outlined text-[120px]">stars</span>
             </div>
           </div>
 
@@ -172,41 +154,14 @@ export default function Analytics() {
           </div>
         </section>
 
-        {/* Activity Heatmap (12 Columns) */}
-        <section className="col-span-12 bg-surface-container-lowest rounded-[24px] p-6 md:p-8 shadow-[0_10px_30px_rgba(65,81,187,0.08)] border border-surface-variant/30">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="font-headline-md text-headline-md font-bold text-[20px]">Practice Activity</h3>
-            <div className="flex items-center gap-2 text-label-sm text-xs text-on-surface-variant font-semibold">
-              <span>Less</span>
-              <div className="flex gap-1">
-                <div className="w-3 h-3 rounded-[3px] bg-surface-container"></div>
-                <div className="w-3 h-3 rounded-[3px] bg-tertiary-fixed-dim"></div>
-                <div className="w-3 h-3 rounded-[3px] bg-tertiary-fixed"></div>
-                <div className="w-3 h-3 rounded-[3px] bg-tertiary"></div>
-              </div>
-              <span>More</span>
-            </div>
-          </div>
-          
-          <div className="overflow-x-auto pb-2 custom-scrollbar">
-            <div className="inline-grid grid-rows-7 grid-flow-col gap-1.5 min-w-[900px]">
-              {heatmapCells.map((cell) => (
-                <div
-                  key={cell.id}
-                  className={`w-[14px] h-[14px] rounded-[3px] transition-all cursor-pointer ${cell.colorClass} hover:ring-2 hover:ring-primary/40`}
-                  title={`Activity level: ${cell.level}`}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
+        {/* Activity Heatmap - Rendered via HeatmapChart subcomponent */}
+        <HeatmapChart />
 
-        {/* Score Trend Charts & Benchmarks (6 Columns) */}
+        {/* Vertical Benchmarks (6 Columns) */}
         <section className="col-span-12 lg:col-span-6 bg-surface-container-lowest rounded-[24px] p-6 md:p-8 shadow-[0_10px_30px_rgba(65,81,187,0.08)] border border-surface-variant/30">
           <h3 className="font-headline-md text-headline-md mb-6 font-bold text-[20px]">Vertical Benchmarks</h3>
           
           <div className="space-y-6">
-            {/* Interview Performance */}
             <div className="flex items-center gap-6">
               <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
                 <span className="material-symbols-outlined text-3xl">mic</span>
@@ -228,7 +183,6 @@ export default function Analytics() {
               </div>
             </div>
 
-            {/* Resume Score */}
             <div className="flex items-center gap-6">
               <div className="w-16 h-16 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary shrink-0">
                 <span className="material-symbols-outlined text-3xl">description</span>
@@ -243,7 +197,6 @@ export default function Analytics() {
                   <div className="bg-secondary-container/20 hover:bg-secondary-container transition-colors w-full h-[30%] rounded-t-sm"></div>
                   <div className="bg-secondary-container/20 hover:bg-secondary-container transition-colors w-full h-[45%] rounded-t-sm"></div>
                   <div className="bg-secondary-container/20 hover:bg-secondary-container transition-colors w-full h-[80%] rounded-t-sm"></div>
-                  <div className="bg-secondary-container/20 hover:bg-secondary-container transition-colors w-full h-[65%] rounded-t-sm"></div>
                   <div className="bg-secondary-container/20 hover:bg-secondary-container transition-colors w-full h-[70%] rounded-t-sm"></div>
                   <div className="bg-secondary-container hover:bg-secondary-container transition-colors w-full h-[72%] rounded-t-sm"></div>
                 </div>
@@ -252,12 +205,11 @@ export default function Analytics() {
           </div>
         </section>
 
-        {/* Weak/Strong Topics (6 Columns) */}
+        {/* Topic Mastery (6 Columns) */}
         <section className="col-span-12 lg:col-span-6 bg-surface-container-lowest rounded-[24px] p-6 md:p-8 shadow-[0_10px_30px_rgba(65,81,187,0.08)] border border-surface-variant/30">
           <h3 className="font-headline-md text-headline-md mb-6 font-bold text-[20px]">Topic Mastery</h3>
           
           <div className="grid grid-cols-2 gap-gutter text-left">
-            {/* Top Strengths */}
             <div>
               <h4 className="font-label-md text-tertiary uppercase tracking-wider mb-4 text-xs font-bold">Top Strengths</h4>
               <div className="space-y-3">
@@ -269,14 +221,9 @@ export default function Analytics() {
                   <span className="font-body-md font-semibold">Behavioral</span>
                   <span className="material-symbols-outlined text-tertiary" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
                 </div>
-                <div className="bg-tertiary-fixed/30 px-4 py-3 rounded-xl flex items-center justify-between border border-tertiary-fixed-dim/20 text-sm">
-                  <span className="font-body-md font-semibold">Algorithms</span>
-                  <span className="material-symbols-outlined text-tertiary" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                </div>
               </div>
             </div>
             
-            {/* Growth Areas */}
             <div>
               <h4 className="font-label-md text-secondary uppercase tracking-wider mb-4 text-xs font-bold">Growth Areas</h4>
               <div className="space-y-3">
@@ -288,19 +235,17 @@ export default function Analytics() {
                   <span className="font-body-md font-semibold">Unit Testing</span>
                   <span className="material-symbols-outlined text-secondary font-bold">trending_up</span>
                 </div>
-                <div className="bg-secondary-fixed/30 px-4 py-3 rounded-xl flex items-center justify-between border border-secondary-fixed-dim/20 text-sm">
-                  <span className="font-body-md font-semibold">Security Basics</span>
-                  <span className="material-symbols-outlined text-secondary font-bold">trending_up</span>
-                </div>
               </div>
             </div>
           </div>
           
-          {/* Mentor Quote */}
           <div className="mt-8 bg-surface-container rounded-2xl p-4 flex items-center gap-4 border border-surface-variant/20">
             <img 
               className="w-12 h-12 rounded-full border-2 border-white shadow-sm" 
               alt="Mentor avatar" 
+              loading="lazy"
+              decoding="async"
+              onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=60'; }}
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiiNXiQlsE0oQ2HYfv54NB40tFqLD0SLIiHhBx7ihhl-QoImSynRFZmuWiG8F321d3ANagucoaZ99X4NR1gI9dTTAHAFHzs2UmT96oc3xKcS1OqB3ioHsGqntbUaTjw7cmxB-l8OhXi1k5XeacCeY7OpYlzdt7TcRWGpbCU9Kgo-tWXxRZFs27VNseNyuleL4D1rWFuB39baaCVXDz7If3-EkuSMfbBkX8nMhH2c4rHwGvaow-AJk28g"
             />
             <p className="font-body-md text-on-surface-variant italic text-sm">
@@ -308,26 +253,71 @@ export default function Analytics() {
             </p>
           </div>
         </section>
+
+        {/* Recommended Topics & Preparation Plan Card (12 Columns) */}
+        <section className="col-span-12 bg-surface-container-lowest rounded-[24px] p-6 md:p-8 shadow-[0_10px_30px_rgba(65,81,187,0.08)] border border-surface-variant/30 text-left">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div>
+              <h3 className="font-headline-md text-headline-md font-bold text-[20px] text-on-surface">Recommended Topics & Growth Action Plan</h3>
+              <p className="font-body-md text-sm text-on-surface-variant mt-1">
+                Topics recommended by CrackIt AI plus topics flagged from low-scoring or inappropriate responses.
+              </p>
+            </div>
+            <button 
+              onClick={() => navigate('/interview-setup')}
+              className="px-6 py-2.5 bg-secondary text-on-secondary font-bold text-xs rounded-full shadow-md hover:scale-105 active:scale-95 transition-all shrink-0 flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-secondary"
+            >
+              <span className="material-symbols-outlined text-sm">bolt</span>
+              <span>Start Preparation Session</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-primary/5 p-5 rounded-2xl border border-primary/20 space-y-4">
+              <h4 className="font-bold text-xs text-primary uppercase tracking-wider flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-sm">verified</span>
+                <span>Recommended Topics from CrackIt AI</span>
+              </h4>
+              <div className="space-y-3">
+                {mockRecommendedTopics.map((topic) => (
+                  <div key={topic.id} className="p-4 bg-white rounded-xl shadow-sm border border-primary/10 flex justify-between items-center">
+                    <div>
+                      <h5 className="font-bold text-sm text-on-surface">{topic.title}</h5>
+                      <p className="text-xs text-on-surface-variant mt-0.5">{topic.reason}</p>
+                    </div>
+                    <span className="px-3 py-1 bg-primary/10 text-primary font-bold text-xs rounded-full shrink-0 ml-3">
+                      {topic.difficulty}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-secondary/5 p-5 rounded-2xl border border-secondary/20 space-y-4">
+              <h4 className="font-bold text-xs text-secondary uppercase tracking-wider flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-sm">warning</span>
+                <span>Topics Needing Preparation (Weak Answers)</span>
+              </h4>
+              <div className="space-y-3">
+                {mockTopicsNeedingPreparation.map((topic) => (
+                  <div key={topic.id} className="p-4 bg-white rounded-xl shadow-sm border border-secondary/10 flex justify-between items-center">
+                    <div>
+                      <h5 className="font-bold text-sm text-on-surface">{topic.title}</h5>
+                      <p className="text-xs text-on-surface-variant mt-0.5">{topic.reason}</p>
+                    </div>
+                    <span className="px-3 py-1 bg-secondary/10 text-secondary font-bold text-xs rounded-full shrink-0 ml-3">
+                      Score {topic.score}%
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
 
-      {/* Floating Action Component - Insight Card */}
-      <div className="mt-gutter flex flex-col md:flex-row gap-gutter">
-        <div className="flex-1 glass-card p-6 md:p-8 rounded-[32px] flex items-center gap-8 shadow-xl border border-surface-variant/30 text-left">
-          <div className="bg-primary w-20 h-20 md:w-24 md:h-24 rounded-[28px] flex-shrink-0 flex items-center justify-center shadow-lg shadow-primary/30 text-on-primary">
-            <span className="material-symbols-outlined text-5xl">auto_awesome</span>
-          </div>
-          <div>
-            <h3 className="font-headline-md text-headline-md text-primary font-bold text-lg">AI Career Prediction</h3>
-            <p className="font-body-lg text-sm text-on-surface-variant max-w-2xl mt-2 leading-relaxed">
-              Based on your growth trajectory, you are highly likely to secure a <strong>Senior Engineer</strong> role at a Tier-1 firm within the next 45 days. Keep up the consistency!
-            </p>
-          </div>
-        </div>
-      </div>
-      
-      {/* Background Decorations */}
-      <div className="fixed top-0 right-0 -z-10 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none"></div>
-      <div className="fixed bottom-0 left-64 -z-10 w-[400px] h-[400px] bg-tertiary/5 rounded-full blur-[100px] pointer-events-none"></div>
+      {/* Responsive Background Ambient Element */}
+      <div className="fixed top-0 right-0 -z-10 w-full max-w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none"></div>
     </div>
   );
 }

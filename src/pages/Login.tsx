@@ -1,33 +1,52 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, FormEvent, MouseEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
+import { trimInput, isNonEmptyString } from '../lib/sanitize';
 
-export default function Login({ onLogin }) {
+interface LoginProps {
+  onLogin?: () => void;
+}
+
+export default function Login({ onLogin }: LoginProps) {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   useEffect(() => {
-    // Subtle parallax effect for the background mesh on mouse move, matching Stitch behavior
-    const handleMouseMove = (e) => {
+    // Subtle parallax effect for the background mesh on mouse move
+    const handleMouseMove = (e: MouseEvent | globalThis.MouseEvent) => {
       const x = e.clientX / window.innerWidth;
       const y = e.clientY / window.innerHeight;
       document.body.style.backgroundPosition = `${x * 20}px ${y * 20}px`;
     };
     
     document.addEventListener('mousemove', handleMouseMove);
-    return () => document.removeEventListener('mousemove', handleMouseMove);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.body.style.backgroundPosition = ''; // Cleanup global DOM mutation
+    };
   }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Simulate authentication
+  const handleSubmit = (e?: FormEvent) => {
+    if (e) e.preventDefault();
+    const cleanEmail = trimInput(email);
+    const cleanPassword = trimInput(password);
+    
+    if (e && (!isNonEmptyString(cleanEmail) || !isNonEmptyString(cleanPassword))) {
+      showToast('Please enter both email and password.', 'error');
+      return;
+    }
+
     if (onLogin) onLogin();
+    showToast('Welcome back! Login successful.', 'success');
     navigate('/dashboard');
   };
 
-  const handleForgotPassword = (e) => {
+  const handleForgotPassword = (e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    alert('Mock Reset: Password reset link has been sent to ' + (email || 'your email') + '!');
+    const targetEmail = trimInput(email) || 'your email';
+    showToast(`Password reset link has been sent to ${targetEmail}.`, 'info');
   };
 
   return (
@@ -37,11 +56,16 @@ export default function Login({ onLogin }) {
         <div className="flex items-center gap-2">
           <Link to="/" className="text-headline-md font-headline-md font-extrabold text-primary">CrackIt</Link>
         </div>
+        <nav className="hidden md:flex gap-gutter items-center">
+          <Link className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors focus:outline-none focus:ring-1 focus:ring-primary rounded" to="/#features">Features</Link>
+          <Link className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors focus:outline-none focus:ring-1 focus:ring-primary rounded" to="/#how-it-works">How It Works</Link>
+          <Link className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors focus:outline-none focus:ring-1 focus:ring-primary rounded" to="/#faq">FAQ</Link>
+        </nav>
         <div className="flex items-center gap-4">
           <span className="font-label-md text-label-md text-on-surface-variant hidden md:block">New to CrackIt?</span>
           <button 
             onClick={() => navigate('/signup')} 
-            className="px-6 py-2.5 bg-primary-fixed text-on-primary-fixed rounded-full font-label-md text-label-md hover:scale-105 transition-transform active:scale-95"
+            className="px-6 py-2.5 bg-primary-fixed text-on-primary-fixed rounded-full font-label-md text-label-md hover:scale-105 transition-transform active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary"
           >
             Sign Up
           </button>
@@ -49,7 +73,7 @@ export default function Login({ onLogin }) {
       </header>
 
       {/* Main Form */}
-      <main className="flex-grow flex items-center justify-center p-margin-mobile md:p-margin-desktop">
+      <main className="flex-grow flex items-center justify-center px-margin-mobile md:px-margin-desktop pb-margin-mobile md:pb-margin-desktop">
         <div className="w-full max-w-[480px]">
           <div className="bg-surface-container-lowest p-8 md:p-12 rounded-[32px] login-card-shadow relative overflow-hidden text-left border border-surface-variant/30">
             {/* Subtle Decorative Accent */}
@@ -83,7 +107,7 @@ export default function Login({ onLogin }) {
                 <div className="flex justify-between items-center px-1">
                   <label className="font-label-md text-label-md text-on-surface" htmlFor="password">Password</label>
                   <a 
-                    className="font-label-sm text-label-sm text-primary hover:underline" 
+                    className="font-label-sm text-label-sm text-primary hover:underline focus:outline-none focus:ring-1 focus:ring-primary rounded" 
                     href="#" 
                     onClick={handleForgotPassword}
                   >
@@ -116,7 +140,7 @@ export default function Login({ onLogin }) {
 
               {/* Login Button */}
               <button 
-                className="w-full py-4 bg-secondary-container hover:bg-secondary text-white font-headline-md text-headline-md rounded-full shadow-lg shadow-secondary-container/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 mt-4" 
+                className="w-full py-4 bg-secondary-container hover:bg-secondary text-white font-headline-md text-headline-md rounded-full shadow-lg shadow-secondary-container/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 mt-4 focus:outline-none focus:ring-2 focus:ring-primary" 
                 type="submit"
               >
                 <span>Login</span>
@@ -131,20 +155,14 @@ export default function Login({ onLogin }) {
             </div>
 
             {/* Social Login */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="w-full">
               <button 
-                onClick={handleSubmit} 
-                className="flex items-center justify-center gap-3 py-3 px-4 border border-outline-variant rounded-2xl hover:bg-surface-container hover:border-outline transition-all active:scale-95"
+                type="button"
+                onClick={() => handleSubmit()} 
+                className="w-full flex items-center justify-center gap-3 py-3.5 px-4 border border-outline-variant rounded-2xl hover:bg-surface-container hover:border-outline transition-all active:scale-95 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <img alt="Google" className="w-5 h-5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmz2OcFtIkjWEOXAPxUIlvwv6obt9MZ23c3Fix_7afzuxRNdcgBNlg1EwZoactjnYj9sr8awB_r7gte8JfKLImN5DjJTyRZdhFbw1JhYkxIRLrGykmxPNYNf-JhNGo89Fxio0wUBs1XGLEVAbfhka36fUjggrMF-TeBc93lvJVPyzpoWXCi0zcPdYdn9e_RsMLArwV0v-OV-dE8duJA3svg-l2Iu6SxTiuNmUMyNmLz_bcmuuviZdhgw" />
-                <span className="font-label-md text-label-md">Google</span>
-              </button>
-              <button 
-                onClick={handleSubmit} 
-                className="flex items-center justify-center gap-3 py-3 px-4 border border-outline-variant rounded-2xl hover:bg-surface-container hover:border-outline transition-all active:scale-95"
-              >
-                <span className="material-symbols-outlined text-on-surface" style={{ fontVariationSettings: "'FILL' 1" }}>terminal</span>
-                <span className="font-label-md text-label-md">GitHub</span>
+                <span className="font-label-md text-label-md font-semibold">Continue with Google</span>
               </button>
             </div>
           </div>
@@ -155,7 +173,7 @@ export default function Login({ onLogin }) {
       <footer className="w-full py-12 px-margin-desktop bg-surface-container-highest flex flex-col md:flex-row justify-between items-center gap-gutter text-center md:text-left">
         <div className="flex flex-col items-center md:items-start gap-2">
           <span className="font-headline-md text-headline-md font-extrabold text-primary">CrackIt</span>
-          <p className="font-body-md text-body-md text-on-surface-variant opacity-80">© 2024 CrackIt AI. Friendly Professional Mentor.</p>
+          <p className="font-body-md text-body-md text-on-surface-variant opacity-80">© 2026 CrackIt AI. Friendly Professional Mentor.</p>
         </div>
         <nav className="flex flex-wrap justify-center gap-6 mt-4 md:mt-0">
           <a className="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Privacy Policy</a>

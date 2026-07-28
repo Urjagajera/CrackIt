@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, MouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mockInterviews, mockResumes } from '../utils/mockData';
+import { useToast } from '../context/ToastContext';
+import { Interview, ResumeItem } from '../types';
 
 export default function Reports() {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [interviews, setInterviews] = useState(mockInterviews);
-  const [resumes, setResumes] = useState(mockResumes);
+  const { showToast } = useToast();
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [interviews, setInterviews] = useState<Interview[]>(mockInterviews);
+  const [resumes, setResumes] = useState<ResumeItem[]>(mockResumes);
 
   const filteredInterviews = interviews.filter(item => 
     item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -17,22 +20,24 @@ export default function Reports() {
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleDeleteInterview = (id, e) => {
+  const handleDeleteInterview = (id: string, e: MouseEvent) => {
     e.stopPropagation();
     if (confirm("Are you sure you want to delete this report?")) {
-      setInterviews(interviews.filter(item => item.id !== id));
+      setInterviews(prev => prev.filter(item => item.id !== id));
+      showToast('Report deleted.', 'info');
     }
   };
 
-  const handleDeleteResume = (id, e) => {
+  const handleDeleteResume = (id: number, e: MouseEvent) => {
     e.stopPropagation();
     if (confirm("Are you sure you want to delete this resume analysis?")) {
-      setResumes(resumes.filter(item => item.id !== id));
+      setResumes(prev => prev.filter(item => item.id !== id));
+      showToast('Resume audit deleted.', 'info');
     }
   };
 
   return (
-    <div className="p-margin-mobile md:p-margin-desktop min-h-screen text-left bg-background selection:bg-primary-fixed">
+    <div className="px-margin-mobile md:px-margin-desktop pb-margin-mobile md:pb-margin-desktop min-h-screen text-left bg-background selection:bg-primary-fixed">
       {/* Header Section */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-gutter mb-12">
         <div>
@@ -46,7 +51,7 @@ export default function Reports() {
           <div className="relative">
             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant opacity-60">search</span>
             <input 
-              className="bg-surface-container-lowest border border-outline-variant/30 rounded-full pl-12 pr-6 py-3 w-64 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none text-sm" 
+              className="bg-surface-container-lowest border border-outline-variant/30 rounded-full pl-12 pr-6 py-3 w-64 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm" 
               placeholder="Search reports..." 
               type="text"
               value={searchTerm}
@@ -54,8 +59,9 @@ export default function Reports() {
             />
           </div>
           <button 
-            onClick={() => alert("Simulation: Filters list toggled.")}
-            className="bg-surface-container text-on-surface px-6 py-3 rounded-full font-label-md text-xs font-semibold flex items-center gap-2 hover:bg-surface-variant transition-colors"
+            type="button"
+            onClick={() => showToast("Filters menu opened.", "info")}
+            className="bg-surface-container text-on-surface px-6 py-3 rounded-full font-label-md text-xs font-semibold flex items-center gap-2 hover:bg-surface-variant transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <span className="material-symbols-outlined text-[18px]">filter_list</span>
             <span>Filter</span>
@@ -75,13 +81,18 @@ export default function Reports() {
               </span>
               <span>Interview Sessions</span>
             </h3>
-            <button onClick={() => alert("Viewing all mock interviews")} className="text-primary font-label-md font-semibold hover:underline text-sm">View all</button>
+            <button 
+              onClick={() => showToast("Showing all mock interviews.", "info")} 
+              className="text-primary font-label-md font-semibold hover:underline text-sm focus:outline-none focus:ring-1 focus:ring-primary rounded"
+            >
+              View all
+            </button>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-12 gap-gutter">
             {filteredInterviews.length > 0 ? (
               <>
-                {/* Featured Card (Left side, takes 8 columns if multiple, or full) */}
+                {/* Featured Card */}
                 <div className="md:col-span-8 report-card bg-surface-container-lowest p-6 rounded-[24px] border border-outline-variant/10 flex flex-col md:flex-row gap-6 relative overflow-hidden shadow-sm">
                   <div className="absolute top-0 right-0 p-4">
                     <span className="px-3 py-1 bg-tertiary-container text-on-tertiary-container text-label-sm rounded-full text-[10px] font-bold uppercase tracking-wider">Most Recent</span>
@@ -91,6 +102,9 @@ export default function Reports() {
                     <img 
                       className="w-full h-full object-cover" 
                       alt="Interviewer avatar" 
+                      loading="lazy"
+                      decoding="async"
+                      onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=60'; }}
                       src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsZm5BVBqWWwCTgYCIL7fGUKE7PAtyju-f3VZTT5i1RfT5jNCIW84Yu7zecCRI9RUkxAw5ZtYDSg9Pe61xVRXHDTbnAgk1Bxk1GLHk3_lwLQPuu2LWmPsJwCW1N5ZR1DS_bouAaRWM4pxqRQMpmxQBldvcGX3YCQKIB6QSoP2YE7sOf2ZGgecGA15SvkM5GERr2KIXgqb6pZMo1pP8c1ZqEpQsaCIVLHxTn93ftF3SroXLh3j1giNnJg"
                     />
                   </div>
@@ -118,19 +132,21 @@ export default function Reports() {
                     <div className="flex items-center gap-3">
                       <button 
                         onClick={() => navigate(`/interview-replay/${filteredInterviews[0].id}`)}
-                        className="bg-primary text-on-primary px-6 py-2 rounded-full font-label-md text-xs font-semibold hover:opacity-90 active:scale-95 transition-all"
+                        className="bg-primary text-on-primary px-6 py-2 rounded-full font-label-md text-xs font-semibold hover:opacity-90 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-primary"
                       >
                         Review Feedback
                       </button>
                       <button 
-                        onClick={() => alert("Downloading PDF...")}
-                        className="p-2 text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center"
+                        onClick={() => showToast(`Downloading PDF for ${filteredInterviews[0].title}`, "info")}
+                        className="p-2 text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center focus:outline-none focus:ring-1 focus:ring-primary rounded"
+                        aria-label="Download report PDF"
                       >
                         <span className="material-symbols-outlined text-[20px]">download</span>
                       </button>
                       <button 
                         onClick={(e) => handleDeleteInterview(filteredInterviews[0].id, e)}
-                        className="p-2 text-on-surface-variant hover:text-error transition-colors flex items-center justify-center"
+                        className="p-2 text-on-surface-variant hover:text-error transition-colors flex items-center justify-center focus:outline-none focus:ring-1 focus:ring-error rounded"
+                        aria-label="Delete report"
                       >
                         <span className="material-symbols-outlined text-[20px]">delete</span>
                       </button>
@@ -138,13 +154,14 @@ export default function Reports() {
                   </div>
                 </div>
 
-                {/* Secondary Cards (Right side, taking remaining 4 columns) */}
+                {/* Secondary Cards */}
                 <div className="md:col-span-4 flex flex-col gap-gutter">
                   {filteredInterviews.slice(1).map((interview) => (
-                    <div 
+                    <button
                       key={interview.id}
+                      type="button"
                       onClick={() => navigate(`/interview-replay/${interview.id}`)}
-                      className="report-card bg-surface-container-lowest p-6 rounded-[24px] border border-outline-variant/10 flex flex-col justify-between h-48 shadow-sm cursor-pointer hover:border-primary/20 transition-all text-left"
+                      className="w-full report-card bg-surface-container-lowest p-6 rounded-[24px] border border-outline-variant/10 flex flex-col justify-between h-48 shadow-sm cursor-pointer hover:border-primary/20 transition-all text-left focus:outline-none focus:ring-2 focus:ring-primary"
                     >
                       <div className="mb-4">
                         <span className="text-on-surface-variant font-label-sm text-xs font-semibold">{interview.date}</span>
@@ -161,7 +178,7 @@ export default function Reports() {
                           <span className="text-primary material-symbols-outlined text-[18px]">arrow_forward</span>
                         </div>
                       </div>
-                    </div>
+                    </button>
                   ))}
                 </div>
               </>
@@ -194,14 +211,16 @@ export default function Reports() {
                     <span className="p-2 bg-surface-container rounded-lg text-primary material-symbols-outlined">article</span>
                     <div className="flex gap-1" onClick={e => e.stopPropagation()}>
                       <button 
-                        onClick={() => alert(`Downloading resume: ${res.name}`)}
-                        className="p-1 hover:text-primary transition-colors flex items-center justify-center"
+                        onClick={() => showToast(`Downloading resume: ${res.name}`, "info")}
+                        className="p-1 hover:text-primary transition-colors flex items-center justify-center focus:outline-none focus:ring-1 focus:ring-primary rounded"
+                        aria-label={`Download ${res.name}`}
                       >
                         <span className="material-symbols-outlined text-[20px]">download</span>
                       </button>
                       <button 
                         onClick={(e) => handleDeleteResume(res.id, e)}
-                        className="p-1 hover:text-error transition-colors flex items-center justify-center"
+                        className="p-1 hover:text-error transition-colors flex items-center justify-center focus:outline-none focus:ring-1 focus:ring-error rounded"
+                        aria-label={`Delete ${res.name}`}
                       >
                         <span className="material-symbols-outlined text-[20px]">delete</span>
                       </button>

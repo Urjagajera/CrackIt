@@ -1,6 +1,8 @@
+import { UserProfile, ResumeItem, Persona, Interview, ProjectIntelItem, RecommendedTopic, WeakTopic } from '../types';
+
 // TODO: replace with real API data
 
-export const mockUserProfile = {
+export const mockUserProfile: UserProfile = {
   name: "Alex Johnson",
   email: "alex.johnson@gmail.com",
   avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuAAxFZ8zEAQzn58df4W8I3cgMxUp8C3ACQ2VwC3u7opQ4hhSpaacmPvBiFX4iGLCl0SD1t0ZH4zS_4wE4SLOQWJFLU1DlqrSw97zWIOT5AnWwj6U5QQDgeY7t6nEhAuY_OmQJENcp8JHwpOhaJ3-kD91fhliobyJ-i6U6qdmrFTK4BFOGSlMLrvQDUi9eygfQubXrJiCkmFcwyEoVFtkBpMYpE-ohuQ861NAFOojI6QqBm5PGjuWJuKPw",
@@ -17,7 +19,7 @@ export const mockUserProfile = {
   }
 };
 
-export const mockResumes = [
+export const mockResumes: ResumeItem[] = [
   {
     id: 1,
     name: "Senior_SWE_v4.pdf",
@@ -41,7 +43,7 @@ export const mockResumes = [
   }
 ];
 
-export const mockPersonas = [
+export const mockPersonas: Persona[] = [
   {
     id: "friendly-hr",
     name: "Sarah Lin",
@@ -60,7 +62,7 @@ export const mockPersonas = [
   }
 ];
 
-export const mockInterviews = [
+export const mockInterviews: Interview[] = [
   {
     id: "1",
     title: "Software Engineer Mock",
@@ -78,12 +80,14 @@ export const mockInterviews = [
     },
     transcript: [
       {
+        id: "t1",
         role: "interviewer",
         text: "Can you explain the difference between optimistic and pessimistic locking, and when you would use each?",
         time: "0:12",
         feedback: null
       },
       {
+        id: "t2",
         role: "user",
         text: "Sure. Optimistic locking assumes that multiple transactions can complete without affecting each other. It checks for conflicts before committing. Pessimistic locking blocks resources to prevent conflicts. I'd use optimistic locking in low-conflict read-heavy scenarios.",
         time: "0:45",
@@ -93,12 +97,14 @@ export const mockInterviews = [
         }
       },
       {
+        id: "t3",
         role: "interviewer",
         text: "How would you handle a sudden spikes in write traffic in a globally distributed service?",
         time: "1:30",
         feedback: null
       },
       {
+        id: "t4",
         role: "user",
         text: "Um, I would probably use some sort of, like, message queue like Kafka to rate limit or buffer the writes, and then write them asynchronously. Also maybe leverage edge caching for static components.",
         time: "2:10",
@@ -126,12 +132,14 @@ export const mockInterviews = [
     },
     transcript: [
       {
+        id: "t5",
         role: "interviewer",
         text: "How do you handle negative feedback from product managers during a design review?",
         time: "0:15",
         feedback: null
       },
       {
+        id: "t6",
         role: "user",
         text: "I try to keep an open mind and understand where they are coming from. I separate my personal ego from the work and focus on user metrics.",
         time: "0:50",
@@ -144,7 +152,7 @@ export const mockInterviews = [
   }
 ];
 
-export const mockProjectIntel = [
+export const mockProjectIntel: ProjectIntelItem[] = [
   {
     id: 1,
     name: "Distributed Event Bus (Java / Kafka)",
@@ -182,3 +190,61 @@ export const mockProjectIntel = [
     ]
   }
 ];
+
+export const mockRecommendedTopics: RecommendedTopic[] = [
+  {
+    id: "rec-1",
+    title: "STAR Method Behavioral Communication",
+    category: "Behavioral",
+    badge: "CrackIt Core",
+    reason: "Recommended by CrackIt AI for Senior Engineer roles at Tier-1 companies.",
+    difficulty: "Medium",
+    estimatedMinutes: 15
+  },
+  {
+    id: "rec-2",
+    title: "System Design Tradeoffs & Rate Limiting",
+    category: "System Design",
+    badge: "CrackIt Core",
+    reason: "Essential topic for scaling interviews and architecture rounds.",
+    difficulty: "Hard",
+    estimatedMinutes: 25
+  },
+  {
+    id: "rec-3",
+    title: "Optimistic vs Pessimistic Database Locking",
+    category: "Database & Backend",
+    badge: "CrackIt Core",
+    reason: "High frequency question in technical depth assessments.",
+    difficulty: "Medium",
+    estimatedMinutes: 20
+  }
+];
+
+export const mockTopicsNeedingPreparation: WeakTopic[] = [
+  {
+    id: "weak-1",
+    title: "Cold Start Problem & Database Fallbacks",
+    category: "System Design",
+    reason: "Incomplete answer during E-Commerce Recommendation mock session. Missed Redis downtime scenarios.",
+    score: 62,
+    status: "Priority Revision"
+  },
+  {
+    id: "weak-2",
+    title: "Eliminating Filler Words ('Um', 'Like') Under Pressure",
+    category: "Communication",
+    reason: "Frequent pauses flagged during high-traffic write spike questions.",
+    score: 68,
+    status: "Needs Practice"
+  },
+  {
+    id: "weak-3",
+    title: "Articulating Tradeoffs in Design Reviews",
+    category: "Product & Architecture",
+    reason: "Needs clearer structure when responding to conflicting PM requirements.",
+    score: 71,
+    status: "Needs Practice"
+  }
+];
+
