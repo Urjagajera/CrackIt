@@ -2,7 +2,11 @@ import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 
-export default function Layout({ onLogout }) {
+interface LayoutProps {
+  onLogout?: () => void;
+}
+
+export default function Layout({ onLogout }: LayoutProps) {
   const location = useLocation();
   const hideSidebar = location.pathname === '/interview';
 

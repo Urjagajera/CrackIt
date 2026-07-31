@@ -1,6 +1,7 @@
 import React, { useState, FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
+import { useAuth } from '../context/AuthContext';
 import { trimInput, isNonEmptyString } from '../lib/sanitize';
 
 interface SignupProps {
@@ -10,19 +11,21 @@ interface SignupProps {
 export default function Signup({ onLogin }: SignupProps) {
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { signup } = useAuth();
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const handleSubmit = (e?: FormEvent) => {
+  const handleSubmit = async (e?: FormEvent) => {
     if (e) e.preventDefault();
     const cleanName = trimInput(name);
     const cleanEmail = trimInput(email);
     const cleanPass = trimInput(password);
     const cleanConfirm = trimInput(confirmPassword);
 
-    if (e && (!isNonEmptyString(cleanName) || !isNonEmptyString(cleanEmail) || !isNonEmptyString(cleanPass))) {
+    if (!isNonEmptyString(cleanName) || !isNonEmptyString(cleanEmail) || !isNonEmptyString(cleanPass)) {
       showToast('Please fill out all required fields.', 'error');
       return;
     }
@@ -32,9 +35,17 @@ export default function Signup({ onLogin }: SignupProps) {
       return;
     }
 
-    if (onLogin) onLogin();
-    showToast('Account created successfully! Welcome to CrackIt AI.', 'success');
-    navigate('/dashboard');
+    setIsSubmitting(true);
+    try {
+      await signup(cleanEmail, cleanPass, cleanName);
+      if (onLogin) onLogin();
+      showToast('Account created successfully! Welcome to CrackIt AI.', 'success');
+      navigate('/dashboard');
+    } catch (err: any) {
+      showToast(err.message || 'Signup failed. Please try again.', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -159,9 +170,10 @@ export default function Signup({ onLogin }: SignupProps) {
 
               <button 
                 type="submit"
-                className="w-full py-4 bg-primary text-on-primary font-bold text-sm rounded-full shadow-lg shadow-primary/20 hover:scale-[1.01] active:scale-95 transition-all mt-4 focus:outline-none focus:ring-2 focus:ring-primary"
+                disabled={isSubmitting}
+                className="w-full py-4 bg-primary text-on-primary font-bold text-sm rounded-full shadow-lg shadow-primary/20 hover:scale-[1.01] active:scale-95 transition-all mt-4 focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Create Account &amp; Begin Practice
+                {isSubmitting ? 'Creating Account...' : 'Create Account & Begin Practice'}
               </button>
             </form>
 

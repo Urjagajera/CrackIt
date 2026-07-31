@@ -1,6 +1,7 @@
 import React, { useEffect, useState, FormEvent, MouseEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
+import { useAuth } from '../context/AuthContext';
 import { trimInput, isNonEmptyString } from '../lib/sanitize';
 
 interface LoginProps {
@@ -10,8 +11,10 @@ interface LoginProps {
 export default function Login({ onLogin }: LoginProps) {
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { login, resetPassword } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     // Subtle parallax effect for the background mesh on mouse move
@@ -28,25 +31,43 @@ export default function Login({ onLogin }: LoginProps) {
     };
   }, []);
 
-  const handleSubmit = (e?: FormEvent) => {
+  const handleSubmit = async (e?: FormEvent) => {
     if (e) e.preventDefault();
     const cleanEmail = trimInput(email);
     const cleanPassword = trimInput(password);
     
-    if (e && (!isNonEmptyString(cleanEmail) || !isNonEmptyString(cleanPassword))) {
+    if (!isNonEmptyString(cleanEmail) || !isNonEmptyString(cleanPassword)) {
       showToast('Please enter both email and password.', 'error');
       return;
     }
 
-    if (onLogin) onLogin();
-    showToast('Welcome back! Login successful.', 'success');
-    navigate('/dashboard');
+    setIsSubmitting(true);
+    try {
+      await login(cleanEmail, cleanPassword);
+      if (onLogin) onLogin();
+      showToast('Welcome back! Login successful.', 'success');
+      navigate('/dashboard');
+    } catch (err: any) {
+      showToast(err.message || 'Login failed. Please check your credentials.', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleForgotPassword = (e: MouseEvent<HTMLAnchorElement>) => {
+  const handleForgotPassword = async (e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    const targetEmail = trimInput(email) || 'your email';
-    showToast(`Password reset link has been sent to ${targetEmail}.`, 'info');
+    const cleanEmail = trimInput(email);
+    if (!isNonEmptyString(cleanEmail)) {
+      showToast('Please enter your email address to reset your password.', 'info');
+      return;
+    }
+
+    try {
+      await resetPassword(cleanEmail);
+      showToast(`Password reset link has been sent to ${cleanEmail}. Check your inbox.`, 'info');
+    } catch (err: any) {
+      showToast(err.message || 'Failed to send password reset email.', 'error');
+    }
   };
 
   return (
@@ -93,7 +114,7 @@ export default function Login({ onLogin }: LoginProps) {
                   <input 
                     className="w-full pl-12 pr-4 py-4 bg-surface-container-low rounded-2xl focus:ring-0 focus:border-none border-none outline-none text-body-md" 
                     id="email" 
-                    placeholder="mentor@crackit.ai" 
+                    placeholder="urja@demo.com" 
                     type="email"
                     required
                     value={email}
@@ -140,11 +161,12 @@ export default function Login({ onLogin }: LoginProps) {
 
               {/* Login Button */}
               <button 
-                className="w-full py-4 bg-secondary-container hover:bg-secondary text-white font-headline-md text-headline-md rounded-full shadow-lg shadow-secondary-container/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 mt-4 focus:outline-none focus:ring-2 focus:ring-primary" 
+                className="w-full py-4 bg-secondary-container hover:bg-secondary text-white font-headline-md text-headline-md rounded-full shadow-lg shadow-secondary-container/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 mt-4 focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed" 
                 type="submit"
+                disabled={isSubmitting}
               >
-                <span>Login</span>
-                <span className="material-symbols-outlined">arrow_forward</span>
+                <span>{isSubmitting ? 'Logging in...' : 'Login'}</span>
+                <span className="material-symbols-outlined">{isSubmitting ? 'sync' : 'arrow_forward'}</span>
               </button>
             </form>
 

@@ -1,21 +1,23 @@
-import React, { useState, FormEvent } from 'react';
+import React, { useState, FormEvent, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mockUserProfile } from '../utils/mockData';
 import { useToast } from '../context/ToastContext';
+import { useAuth } from '../context/AuthContext';
 import { trimInput, isNonEmptyString } from '../lib/sanitize';
 import SkillBadgeList from '../components/SkillBadgeList';
 
 export default function Profile() {
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { user, profile: authProfile } = useAuth();
   const [profile, setProfile] = useState(mockUserProfile);
   const [skills, setSkills] = useState<string[]>(['Python', 'System Design', 'Kubernetes', 'React.js', 'Algorithms', 'Go Lang']);
   const [newSkill, setNewSkill] = useState<string>('');
   const [isAddingSkill, setIsAddingSkill] = useState<boolean>(false);
 
-  // Form states
-  const [fullName, setFullName] = useState<string>(profile.name);
-  const [email, setEmail] = useState<string>(profile.email);
+  // Form states initialized from Auth context or fallback
+  const [fullName, setFullName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
   const [bio, setBio] = useState<string>('Aspiring Software Engineer passionate about distributed systems and cloud architecture.');
   const [college, setCollege] = useState<string>('Stanford University');
   const [cgpa, setCgpa] = useState<string>('3.92 / 4.0');
@@ -24,6 +26,18 @@ export default function Profile() {
   const [targetLang, setTargetLang] = useState<string>('English (Global Standard)');
   const [targetCompany, setTargetCompany] = useState<string>('Meta (Facebook)');
   const [mockIntensity, setMockIntensity] = useState<string>('Standard');
+
+  useEffect(() => {
+    if (authProfile?.full_name || user?.user_metadata?.full_name) {
+      const name = authProfile?.full_name || user?.user_metadata?.full_name || '';
+      setFullName(name);
+      setProfile(prev => ({ ...prev, name: name || prev.name }));
+    }
+    if (user?.email) {
+      setEmail(user.email);
+      setProfile(prev => ({ ...prev, email: user.email || prev.email }));
+    }
+  }, [user, authProfile]);
 
   const handleSave = () => {
     const cleanName = trimInput(fullName);
