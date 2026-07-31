@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import HexMeshBackground from '../components/HexMeshBackground';
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -26,7 +27,8 @@ export default function Landing() {
   }, []);
 
   return (
-    <div className="font-body-md text-body-md overflow-x-hidden bg-background text-on-surface scroll-smooth">
+    <div className="relative font-body-md text-body-md overflow-x-hidden bg-background text-on-surface scroll-smooth">
+      <HexMeshBackground />
       {/* TopNavBar — Floating Pill */}
       <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex justify-between items-center px-6 py-3 rounded-full w-[95%] max-w-container-max bg-surface/80 backdrop-blur-md shadow-[0_10px_30px_rgba(65,81,187,0.08)]">
         <div className="flex items-center gap-2">
