@@ -45,3 +45,32 @@ export async function apiFetch<T = any>(
 
   return data as T;
 }
+
+export async function apiUpload<T = any>(
+  endpoint: string,
+  formData: FormData
+): Promise<T> {
+  const token = localStorage.getItem('crackit_access_token');
+  const headers: Record<string, string> = {};
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    method: 'POST',
+    headers,
+    body: formData,
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const message = data.error?.message || response.statusText || 'Upload failed';
+    const code = data.error?.code;
+    throw new ApiError(message, response.status, code);
+  }
+
+  return data as T;
+}
+

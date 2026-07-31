@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { mockUserProfile } from '../utils/mockData';
 import { useToast } from '../context/ToastContext';
 import { useAuth } from '../context/AuthContext';
+import { apiFetch } from '../lib/api';
 import { trimInput, isNonEmptyString } from '../lib/sanitize';
 import SkillBadgeList from '../components/SkillBadgeList';
 
@@ -37,9 +38,20 @@ export default function Profile() {
       setEmail(user.email);
       setProfile(prev => ({ ...prev, email: user.email || prev.email }));
     }
+    if (authProfile?.bio) {
+      setBio(authProfile.bio);
+    }
+    apiFetch<{ profile: any }>('/profile')
+      .then((data) => {
+        if (data.profile) {
+          if (data.profile.full_name) setFullName(data.profile.full_name);
+          if (data.profile.bio) setBio(data.profile.bio);
+        }
+      })
+      .catch(() => {});
   }, [user, authProfile]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const cleanName = trimInput(fullName);
     const cleanEmail = trimInput(email);
     
@@ -48,14 +60,27 @@ export default function Profile() {
       return;
     }
 
-    setProfile(prev => ({
-      ...prev,
-      name: cleanName,
-      email: cleanEmail,
-      targetCompany: targetCompany.includes('Meta') ? 'Meta' : targetCompany
-    }));
-    
-    showToast('Profile configuration saved successfully!', 'success');
+    try {
+      await apiFetch('/profile', {
+        method: 'PUT',
+        body: JSON.stringify({
+          full_name: cleanName,
+          bio: trimInput(bio),
+          target_role: targetCompany,
+        }),
+      });
+
+      setProfile(prev => ({
+        ...prev,
+        name: cleanName,
+        email: cleanEmail,
+        targetCompany: targetCompany.includes('Meta') ? 'Meta' : targetCompany
+      }));
+      
+      showToast('Profile configuration saved successfully!', 'success');
+    } catch (err: any) {
+      showToast(err.message || 'Failed to update profile.', 'error');
+    }
   };
 
   const handleAddSkill = (e: FormEvent) => {
