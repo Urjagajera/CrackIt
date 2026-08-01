@@ -7,12 +7,13 @@ import {
   deleteResume,
 } from "../controllers/resumeController.js";
 import { requireAuth } from "../middleware/auth.js";
+import { aiRateLimiter } from "../middleware/rateLimiter.js";
 
 const router = Router();
 
 router.use(requireAuth);
 
-router.post("/upload", uploadMiddleware, uploadResume);
+router.post("/upload", aiRateLimiter, uploadMiddleware, uploadResume);
 router.get("/", listResumes);
 router.get("/:id", getResume);
 router.delete("/:id", deleteResume);

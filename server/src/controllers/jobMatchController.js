@@ -2,6 +2,7 @@ import { supabaseAdmin } from "../config/supabase.js";
 import { jobMatchSchema } from "../validators/jobs.js";
 import { analyzeJobMatch } from "../services/jobMatcher.js";
 import { getDemoJobById } from "./jobsController.js";
+import { createNotification } from "../services/notificationService.js";
 
 // In-memory demo job matches store
 const demoMatchesStore = new Map();
@@ -70,6 +71,15 @@ export async function createMatch(req, res, next) {
       gap_analysis_json: matchAnalysis.gap_analysis_json,
       created_at: new Date().toISOString(),
     };
+
+    // Trigger notification for job match calculation
+    await createNotification(
+      userId,
+      "job_match_ready",
+      "Job Gap Analysis Ready",
+      `Match score: ${matchAnalysis.match_score}%. Review missing keywords and recommendations.`,
+      "/job-match"
+    ).catch(() => {});
 
     if (req.token && req.token.startsWith("demo-token-")) {
       demoMatchesStore.set(matchRecord.id, matchRecord);

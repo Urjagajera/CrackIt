@@ -2,6 +2,7 @@ import { supabaseAdmin } from "../config/supabase.js";
 import { transcribeAudio } from "../services/sttService.js";
 import { scoreResponse } from "../services/responseScorer.js";
 import { generateReport } from "../services/reportGenerator.js";
+import { createNotification } from "../services/notificationService.js";
 
 const DEFAULT_QUESTIONS = [
   "Tell me about yourself and your background.",
@@ -296,6 +297,15 @@ export async function endSession(sessionId) {
       created_at: new Date().toISOString(),
     });
   }
+
+  // Trigger real notification for completed session
+  await createNotification(
+    session.userId,
+    "session_completed",
+    "Interview Session Completed!",
+    "Your mock round has finished. View your score breakdown and AI coaching feedback.",
+    `/interview-replay/${sessionId}`
+  ).catch(() => {});
 
   broadcastToSession(session, {
     type: "session_completed",

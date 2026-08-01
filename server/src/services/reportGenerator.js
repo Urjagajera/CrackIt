@@ -1,4 +1,5 @@
 import { supabaseAdmin } from "../config/supabase.js";
+import { createNotification } from "./notificationService.js";
 
 /**
  * ══════════════════════════════════════════════════════════════════════════════
@@ -94,6 +95,16 @@ export async function generateReport(sessionId, userId, memoryResponses = []) {
         improvements_json: narrative.improvements,
         summary_text: narrative.summaryText,
       }).catch(() => {});
+    }
+
+    if (userId) {
+      await createNotification(
+        userId,
+        "report_ready",
+        "Performance Report Ready",
+        `Aggregate score: ${actualAverageScore}%. Read your detailed AI coaching feedback.`,
+        `/interview-replay/${sessionId}`
+      ).catch(() => {});
     }
 
     return reportRow;

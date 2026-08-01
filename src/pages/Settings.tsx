@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
+import { apiFetch } from '../lib/api';
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -12,6 +13,53 @@ export default function Settings() {
   const [reminders, setReminders] = useState<boolean>(true);
   const [reports, setReports] = useState<boolean>(true);
   const [marketing, setMarketing] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    apiFetch<{ settings: any }>('/settings')
+      .then((data) => {
+        if (data.settings) {
+          setReminders(Boolean(data.settings.practice_reminders));
+          setReports(Boolean(data.settings.analytical_reports));
+          setMarketing(Boolean(data.settings.marketing_tips));
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, []);
+
+  const handleToggle = async (key: string, value: boolean) => {
+    let newReminders = reminders;
+    let newReports = reports;
+    let newMarketing = marketing;
+
+    if (key === 'practice_reminders') {
+      newReminders = value;
+      setReminders(value);
+    } else if (key === 'analytical_reports') {
+      newReports = value;
+      setReports(value);
+    } else if (key === 'marketing_tips') {
+      newMarketing = value;
+      setMarketing(value);
+    }
+
+    try {
+      await apiFetch<{ settings: any }>('/settings', {
+        method: 'PUT',
+        body: JSON.stringify({
+          practice_reminders: newReminders,
+          analytical_reports: newReports,
+          marketing_tips: newMarketing,
+        }),
+      });
+      showToast('Settings saved successfully.', 'success');
+    } catch (err: any) {
+      showToast(err.message || 'Failed to save settings.', 'error');
+    }
+  };
 
   const handleTestMic = () => {
     setMicTestActive(true);
@@ -139,7 +187,7 @@ export default function Settings() {
                   <input 
                     type="checkbox" 
                     checked={reminders}
-                    onChange={(e) => setReminders(e.target.checked)}
+                    onChange={(e) => handleToggle('practice_reminders', e.target.checked)}
                     className="sr-only peer"
                   />
                   <div className="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
@@ -155,7 +203,7 @@ export default function Settings() {
                   <input 
                     type="checkbox" 
                     checked={reports}
-                    onChange={(e) => setReports(e.target.checked)}
+                    onChange={(e) => handleToggle('analytical_reports', e.target.checked)}
                     className="sr-only peer"
                   />
                   <div className="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
@@ -171,7 +219,7 @@ export default function Settings() {
                   <input 
                     type="checkbox" 
                     checked={marketing}
-                    onChange={(e) => setMarketing(e.target.checked)}
+                    onChange={(e) => handleToggle('marketing_tips', e.target.checked)}
                     className="sr-only peer"
                   />
                   <div className="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>

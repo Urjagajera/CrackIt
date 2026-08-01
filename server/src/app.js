@@ -5,6 +5,7 @@ import morgan from "morgan";
 
 import { env } from "./config/index.js";
 import { errorHandler, notFoundHandler } from "./middleware/index.js";
+import { globalRateLimiter } from "./middleware/rateLimiter.js";
 import apiRouter from "./routes/index.js";
 
 /**
@@ -34,8 +35,8 @@ export function createApp() {
   const morganFormat = env.NODE_ENV === "production" ? "combined" : "dev";
   app.use(morgan(morganFormat));
 
-  // ── API routes ────────────────────────────────────────
-  app.use("/api", apiRouter);
+  // ── Rate Limiting & API routes ───────────────────────
+  app.use("/api", globalRateLimiter, apiRouter);
 
   // ── Error handling (must come last) ───────────────────
   app.use(notFoundHandler);

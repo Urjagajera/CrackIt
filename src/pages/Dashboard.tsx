@@ -1,11 +1,61 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { mockUserProfile, mockInterviews, mockRecommendedTopics, mockTopicsNeedingPreparation } from '../utils/mockData';
+import { mockUserProfile, mockInterviews } from '../utils/mockData';
+import { apiFetch } from '../lib/api';
+import { useToast } from '../context/ToastContext';
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const profile = mockUserProfile;
   const interviews = mockInterviews;
+
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [unreadCount, setUnreadCount] = useState<number>(0);
+  const [showNotifDropdown, setShowNotifDropdown] = useState<boolean>(false);
+
+  const fetchNotifications = async () => {
+    try {
+      const data = await apiFetch<{ notifications: any[]; unread_count: number }>('/notifications');
+      if (data.notifications) {
+        setNotifications(data.notifications);
+        setUnreadCount(data.unread_count || 0);
+      }
+    } catch {
+      // Fallback
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  const handleMarkRead = async (notifId: string, linkUrl?: string) => {
+    try {
+      await apiFetch(`/notifications/${notifId}/read`, { method: 'PATCH' });
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notifId ? { ...n, read: true } : n))
+      );
+      setUnreadCount((prev) => Math.max(0, prev - 1));
+      if (linkUrl) {
+        setShowNotifDropdown(false);
+        navigate(linkUrl);
+      }
+    } catch {
+      // Fallback
+    }
+  };
+
+  const handleMarkAllRead = async () => {
+    try {
+      await apiFetch('/notifications/read-all', { method: 'PATCH' });
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+      setUnreadCount(0);
+      showToast('All notifications marked as read.', 'info');
+    } catch {
+      // Fallback
+    }
+  };
 
   return (
     <div className="px-margin-mobile md:px-margin-desktop pb-margin-mobile md:pb-margin-desktop min-h-screen text-left">
@@ -15,23 +65,90 @@ export default function Dashboard() {
           <h2 className="font-headline-lg text-headline-lg text-on-surface">Good morning, {profile.name.split(' ')[0]}!</h2>
           <p className="font-body-md text-body-md text-on-surface-variant">Your mock interview with {profile.targetCompany} is in 3 days. Let's sharpen those skills.</p>
         </div>
-        <button 
-          onClick={() => navigate('/profile')}
-          className="flex items-center gap-3 p-1 pr-4 bg-surface-container rounded-full hover:bg-surface-container-high transition-colors text-left focus:outline-none focus:ring-2 focus:ring-primary"
-        >
-          <img 
-            className="w-10 h-10 rounded-full object-cover border border-primary/20" 
-            alt="User profile avatar" 
-            loading="lazy"
-            decoding="async"
-            onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=60'; }}
-            src={profile.avatar}
-          />
-          <div>
-            <p className="font-label-sm text-on-surface font-semibold leading-tight">{profile.name}</p>
-            <p className="text-[10px] text-on-surface-variant leading-none">{profile.role}</p>
+
+        <div className="flex items-center gap-3">
+          {/* Notification Bell Dropdown */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowNotifDropdown(!showNotifDropdown)}
+              className="relative p-2.5 rounded-full bg-surface-container hover:bg-surface-container-high transition-colors focus:outline-none focus:ring-2 focus:ring-primary flex items-center justify-center text-on-surface"
+              aria-label="Notifications"
+            >
+              <span className="material-symbols-outlined text-[22px]">notifications</span>
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-error text-white font-bold text-[10px] rounded-full flex items-center justify-center animate-pulse">
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+
+            {showNotifDropdown && (
+              <div className="absolute right-0 mt-3 w-80 md:w-96 bg-surface-container-lowest rounded-2xl shadow-xl border border-surface-variant/40 z-50 p-4 space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-surface-variant/30">
+                  <span className="font-bold text-xs text-on-surface uppercase tracking-wider">Notifications ({notifications.length})</span>
+                  {unreadCount > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleMarkAllRead}
+                      className="text-primary font-bold text-xs hover:underline"
+                    >
+                      Mark all as read
+                    </button>
+                  )}
+                </div>
+
+                <div className="max-h-80 overflow-y-auto space-y-2 pr-1">
+                  {notifications.length > 0 ? (
+                    notifications.map((notif) => (
+                      <div
+                        key={notif.id}
+                        onClick={() => handleMarkRead(notif.id, notif.link_url)}
+                        className={`p-3 rounded-xl cursor-pointer transition-all border ${
+                          !notif.read
+                            ? 'bg-primary-fixed/15 border-primary/30 font-semibold'
+                            : 'bg-surface-container-low border-surface-variant/20 opacity-75'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-bold text-xs text-on-surface">{notif.title}</span>
+                          {!notif.read && (
+                            <span className="w-2 h-2 rounded-full bg-primary shrink-0"></span>
+                          )}
+                        </div>
+                        <p className="text-[11px] text-on-surface-variant leading-snug">{notif.message}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-xs text-on-surface-variant italic text-center py-4">No notifications yet.</p>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
-        </button>
+
+          {/* User Profile Pill */}
+          <button
+            onClick={() => navigate('/profile')}
+            className="flex items-center gap-3 p-1 pr-4 bg-surface-container rounded-full hover:bg-surface-container-high transition-colors text-left focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            <img
+              className="w-10 h-10 rounded-full object-cover border border-primary/20"
+              alt="User profile avatar"
+              loading="lazy"
+              decoding="async"
+              onError={(e) => {
+                e.currentTarget.src =
+                  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=60';
+              }}
+              src={profile.avatar}
+            />
+            <div>
+              <p className="font-label-sm text-on-surface font-semibold leading-tight">{profile.name}</p>
+              <p className="text-[10px] text-on-surface-variant leading-none">{profile.role}</p>
+            </div>
+          </button>
+        </div>
       </header>
 
       {/* Grid of Key Performance Indicators */}
