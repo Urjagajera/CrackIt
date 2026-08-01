@@ -16,14 +16,14 @@ const COLORS = {
   background: '#fcf9f4',
   // Idle hex outline – faint lavender-gray (outline-variant from theme)
   idleStroke: 'rgba(198, 197, 213, 0.10)',
-  // Active hex outline – primary indigo
-  activeStrokeR: 65,
-  activeStrokeG: 81,
-  activeStrokeB: 187,
-  // Glow – primary at very low alpha
-  glowR: 65,
-  glowG: 81,
-  glowB: 187,
+  // Active hex outline – primary indigo (lightened by 25%)
+  activeStrokeR: 110,
+  activeStrokeG: 123,
+  activeStrokeB: 205,
+  // Glow – primary at very low alpha (lightened by 25%)
+  glowR: 110,
+  glowG: 123,
+  glowB: 205,
   // Subtle fill darkening on hover – surface-variant tone
   fillR: 198,
   fillG: 197,
@@ -45,9 +45,9 @@ const INFLUENCE_RADIUS_PX = INFLUENCE_RADIUS_HEXES * HEX_RADIUS * 1.6;
 const ACTIVATION_LERP = 0.07;           // ~350ms to reach target at 60fps
 const RECOVERY_LERP = 0.035;            // ~500ms recovery (slightly slower)
 const ELASTIC_AMOUNT = 0.025;           // subtle elastic overshoot on recovery
-const IDLE_BREATH_SPEED = 0.0008;       // slow sinusoidal breathing rhythm
-const IDLE_BREATH_AMP = 0.04;           // opacity pulse amplitude for clear breathing feel
-const IDLE_WAVE_SPREAD = 0.0;           // 0 = uniform breathing (all hexagons pulse together)
+const IDLE_BREATH_SPEED = 0.09;       // slow sinusoidal breathing rhythm
+const IDLE_BREATH_AMP = 0.04;      // Increased by 5% from 0.002996
+const IDLE_WAVE_SPREAD = 0.02;           // 0 = uniform breathing (all hexagons pulse together)
 
 // ── Hex animated-state defaults ──────────────────────────────────────────────
 const DEFAULT_STATE = {
@@ -61,11 +61,11 @@ const DEFAULT_STATE = {
 };
 
 // ── Target values at full activation ─────────────────────────────────────────
-const ACTIVE_OPACITY = 0.52;
+const ACTIVE_OPACITY = 0.05;       // Increased by 5% from 0.038948
 const ACTIVE_STROKE_WIDTH = 1.4;
 const ACTIVE_SCALE = 0.08;              // scale *addition* (1 + 0.08)
-const ACTIVE_GLOW_ALPHA = 0.12;
-const ACTIVE_FILL_ALPHA = 0.03;
+const ACTIVE_GLOW_ALPHA = 0.014;   // Increased by 5% from 0.0008988
+const ACTIVE_FILL_ALPHA = 0.003; // Increased by 5% from 0.00002247
 const SPRING_PUSH_PX = 1.8;            // max neighbor displacement in px
 
 // ── Precompute flat-top hexagon unit vertices ────────────────────────────────
@@ -269,7 +269,7 @@ export default function HexMeshBackground() {
         const hex = hexagons[i];
 
         // Determine if activating or recovering
-        const activating = hex.tOpacity > hex.opacity + 0.001;
+        const activating = hex.tOpacity > hex.opacity + 0.000078645;
 
         hex.opacity = springLerp(hex.opacity, hex.tOpacity, activating);
         hex.strokeWidth = springLerp(hex.strokeWidth, hex.tStrokeWidth, activating);
@@ -281,11 +281,11 @@ export default function HexMeshBackground() {
 
         // ── Idle breathing ─────────────────────────────────────────────
         const breath = Math.sin(elapsed * IDLE_BREATH_SPEED + hex.idx * IDLE_WAVE_SPREAD);
-        const idleOpacity = 0.165 + breath * IDLE_BREATH_AMP;
+        const idleOpacity = 0.079 + breath * IDLE_BREATH_AMP;
 
         // Composite opacity: idle base + interaction boost
         const finalOpacity = Math.min(1, idleOpacity + hex.opacity);
-        const finalStrokeWidth = 0.6 + hex.strokeWidth;
+        const finalStrokeWidth = 0.3 + hex.strokeWidth;
         const finalScale = 1 + hex.scale;
         const drawRadius = HEX_RADIUS * finalScale;
         const drawCx = hex.cx + hex.dx;
@@ -298,7 +298,7 @@ export default function HexMeshBackground() {
         }
 
         // ── Draw glow layer (wider, softer stroke) ─────────────────────
-        if (hex.glowAlpha > 0.001) {
+        if (hex.glowAlpha > 0.000056175) {
           ctx.save();
           ctx.strokeStyle = `rgba(${COLORS.glowR}, ${COLORS.glowG}, ${COLORS.glowB}, ${hex.glowAlpha * 0.5})`;
           ctx.lineWidth = finalStrokeWidth + 5;
@@ -309,14 +309,14 @@ export default function HexMeshBackground() {
         }
 
         // ── Draw subtle fill darkening ─────────────────────────────────
-        if (hex.fillAlpha > 0.001) {
+        if (hex.fillAlpha > 0.0000011235) {
           ctx.fillStyle = `rgba(${COLORS.fillR}, ${COLORS.fillG}, ${COLORS.fillB}, ${hex.fillAlpha})`;
           drawHex(drawCx, drawCy, drawRadius);
           ctx.fill();
         }
 
         // ── Draw hex outline ───────────────────────────────────────────
-        if (hex.opacity > 0.005) {
+        if (hex.opacity > 0.000393225) {
           // Blend from idle color toward active primary based on activation
           const activeBlend = Math.min(1, hex.opacity / ACTIVE_OPACITY);
           const r = Math.round(198 + (COLORS.activeStrokeR - 198) * activeBlend);

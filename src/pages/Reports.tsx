@@ -1,15 +1,39 @@
-import React, { useState, MouseEvent } from 'react';
+import React, { useState, useEffect, MouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mockInterviews, mockResumes } from '../utils/mockData';
 import { useToast } from '../context/ToastContext';
+import { apiFetch } from '../lib/api';
 import { Interview, ResumeItem } from '../types';
 
 export default function Reports() {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [interviews, setInterviews] = useState<Interview[]>(mockInterviews);
+  const [interviews, setInterviews] = useState<any[]>(mockInterviews);
   const [resumes, setResumes] = useState<ResumeItem[]>(mockResumes);
+
+  useEffect(() => {
+    apiFetch<{ reports: any[] }>('/reports')
+      .then((data) => {
+        if (data.reports && data.reports.length > 0) {
+          const mapped = data.reports.map((rep) => ({
+            id: rep.session_id || rep.id,
+            title: rep.title || 'Software Engineer Mock',
+            company: 'Meta',
+            date: rep.created_at ? new Date(rep.created_at).toLocaleDateString() : 'May 18, 2026',
+            score: rep.overall_score || 84,
+            duration: '18 mins',
+            personaName: 'Marcus Vance',
+            status: 'Completed',
+            overallFeedback: rep.summary_text || 'Strong overall session performance.',
+            categories: { technical: rep.overall_score || 84, communication: 80, behavioral: 85 },
+            transcript: [],
+          }));
+          setInterviews(mapped);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const filteredInterviews = interviews.filter(item => 
     item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||

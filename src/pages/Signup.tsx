@@ -73,44 +73,9 @@ export default function Signup({ onLogin }: SignupProps) {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center px-margin-mobile md:px-margin-desktop py-6 min-h-0">
-        <div className="w-full max-w-[1100px] grid md:grid-cols-2 gap-12 items-center text-left">
-          
-          {/* Left Column: Value Prop */}
-          <div className="space-y-6">
-            <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full font-label-sm text-xs font-semibold">
-              Free 14-Day Trial Included
-            </span>
-            <h1 className="font-headline-xl text-headline-xl text-on-surface font-extrabold text-[32px] md:text-[44px] leading-tight">
-              Start Practicing Real AI Interviews Today
-            </h1>
-            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-[440px]">
-              Join thousands of engineers and product leaders mastering high-stakes interviews with personalized AI voice mentors.
-            </p>
-            
-            <div className="space-y-4 pt-4">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-sm font-bold">check</span>
-                </div>
-                <span className="font-body-md text-sm">Adaptive technical &amp; behavioral AI personas</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-sm font-bold">check</span>
-                </div>
-                <span className="font-body-md text-sm">Instant STAR method &amp; confidence analysis</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-sm font-bold">check</span>
-                </div>
-                <span className="font-body-md text-sm">Resume ATS alignment &amp; project prep</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column: Signup Form Card */}
+      <main className="flex-1 flex items-center justify-center px-margin-mobile md:px-margin-desktop py-6">
+        <div className="w-full max-w-[500px]">
+          {/* Signup Form Card */}
           <div className="bg-surface-container-lowest p-8 md:p-10 rounded-[32px] shadow-xl border border-surface-variant/30 relative">
             <div className="mb-8">
               <h3 className="font-headline-lg text-headline-lg text-on-surface mb-2 font-bold">Create Account</h3>
@@ -192,6 +157,11 @@ export default function Signup({ onLogin }: SignupProps) {
               <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="Google" />
               <span>Continue with Google</span>
             </button>
+
+            <p className="text-center text-on-surface-variant text-xs mt-6">
+              Already have an account?{' '}
+              <Link to="/login" className="text-primary font-semibold hover:underline">Login</Link>
+            </p>
           </div>
         </div>
       </main>

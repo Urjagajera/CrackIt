@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { mockInterviews, mockRecommendedTopics, mockTopicsNeedingPreparation } from '../utils/mockData';
 import { useToast } from '../context/ToastContext';
+import { apiFetch } from '../lib/api';
 import TranscriptChatFeed from '../components/TranscriptChatFeed';
 
 export default function InterviewReplay() {
@@ -9,7 +10,22 @@ export default function InterviewReplay() {
   const { id } = useParams<{ id: string }>();
   const { showToast } = useToast();
   
-  const interview = mockInterviews.find(item => item.id === id) || mockInterviews[0];
+  const [interview, setInterview] = useState<any>(mockInterviews.find(item => item.id === id) || mockInterviews[0]);
+
+  useEffect(() => {
+    const sessionId = id || 'demo-session-1';
+    apiFetch<{ session: any; transcript?: any[]; responses?: any[] }>(`/interviews/${sessionId}/replay`)
+      .then((data) => {
+        if (data.session) {
+          setInterview((prev: any) => ({
+            ...prev,
+            ...data.session,
+            transcript: data.transcript || prev.transcript,
+          }));
+        }
+      })
+      .catch(() => {});
+  }, [id]);
 
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [playbackTime, setPlaybackTime] = useState<number>(252);
