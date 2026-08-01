@@ -1,113 +1,79 @@
 import { supabaseAdmin } from "../config/supabase.js";
-import { getActiveSession } from "../ws/sessionManager.js";
-
-// In-memory demo reports store
-const demoReportsStore = new Map([
-  [
-    "demo-session-1",
-    {
-      id: "report-demo-session-1",
-      session_id: "demo-session-1",
-      overall_score: 84,
-      strengths_json: [
-        { area: "System Design", detail: "Strong understanding of caching topologies, Redis vs Caffeine trade-offs, and database lock mitigation." },
-        { area: "Behavioral Communication", detail: "Maintained a professional speaking tone with structured resolution steps." }
-      ],
-      improvements_json: [
-        { area: "STAR Method", detail: "Quantify metrics explicitly when summarizing conflict resolution outcomes." }
-      ],
-      summary_text: "High technical competency shown in system design. Work on structuring behavior responses using the STAR method.",
-      created_at: new Date().toISOString(),
-    }
-  ]
-]);
+import {
+  getActiveSession,
+  getCompletedSession,
+  getCompletedReport,
+  getCompletedReports,
+} from "../ws/sessionManager.js";
 
 /**
  * GET /api/interviews/:id/replay
- * Returns question-by-question timeline, audio URLs, timestamps, and per-response scores.
+ * Returns question-by-question timeline, timestamps, and per-response scores.
  */
 export async function getReplay(req, res, next) {
   try {
     const sessionId = req.params.id;
-    const userId = req.user.id;
 
-    // Check active memory session
+    // 1. Check active in-memory session
     const activeSession = getActiveSession(sessionId);
     if (activeSession) {
+      const mins = Math.round(activeSession.elapsedSeconds / 60) || 1;
       return res.status(200).json({
         session: {
           id: sessionId,
-          title: "Software Engineer Mock",
-          company: "Meta",
+          title: "Technical Mock Interview",
+          company: "Target Placement",
           date: new Date().toLocaleDateString(),
           overallScore: 84,
-          duration: `${Math.round(activeSession.elapsedSeconds / 60)} mins`,
+          duration: `${mins} mins`,
+          status: "in_progress",
         },
         transcript: activeSession.messages,
+        responses: activeSession.responses,
       });
     }
 
-    if (sessionId.startsWith("demo-session-") || req.token?.startsWith("demo-token-")) {
+    // 2. Check completed in-memory session
+    const completed = getCompletedSession(sessionId);
+    if (completed) {
+      const mins = Math.round(completed.elapsedSeconds / 60) || 1;
+      const report = getCompletedReport(sessionId);
       return res.status(200).json({
         session: {
           id: sessionId,
-          title: "Software Engineer Mock",
-          company: "Meta",
-          date: "May 18, 2026",
-          overallScore: 84,
-          duration: "18 mins",
-          personaName: "Marcus Vance",
+          title: completed.title || "Technical Mock Interview",
+          company: completed.company || "Target Placement",
+          date: new Date(completed.created_at).toLocaleDateString(),
+          overallScore: report?.overall_score || 84,
+          duration: `${mins} mins`,
+          status: "completed",
         },
-        transcript: [
-          {
-            id: "t1",
-            role: "ai",
-            sender: "Marcus Vance",
-            text: "Can you explain the difference between optimistic and pessimistic locking, and when you would use each?",
-            time: "0:12",
-          },
-          {
-            id: "t2",
-            role: "user",
-            sender: "You",
-            text: "Sure. Optimistic locking assumes multiple transactions can complete without affecting each other. It checks for conflicts before committing. I'd use optimistic locking in low-conflict read-heavy scenarios.",
-            time: "0:45",
-            score_json: { overall_score: 88, clarity: 90 },
-          },
-          {
-            id: "t3",
-            role: "ai",
-            sender: "Marcus Vance",
-            text: "How would you handle a sudden spike in write traffic in a globally distributed service?",
-            time: "1:30",
-          },
-          {
-            id: "t4",
-            role: "user",
-            sender: "You",
-            text: "I would use a message queue like Kafka to buffer the writes asynchronously, and leverage edge caching for static components.",
-            time: "2:10",
-            score_json: { overall_score: 85, clarity: 84 },
-          },
-        ],
+        transcript: completed.messages,
+        responses: completed.responses,
       });
     }
 
-    // Query Postgres database
-    const { data: session } = await supabaseAdmin
+    // 3. Query PostgreSQL database
+    const { data: dbSession } = await supabaseAdmin
       .from("interview_sessions")
       .select("*")
       .eq("id", sessionId)
       .maybeSingle();
 
-    const { data: responses } = await supabaseAdmin
+    const { data: dbResponses } = await supabaseAdmin
       .from("interview_responses")
       .select("*")
       .eq("session_id", sessionId);
 
-    return res.status(200).json({
-      session: session || { id: sessionId, title: "Mock Session", date: new Date().toLocaleDateString() },
-      responses: responses || [],
+    if (dbSession) {
+      return res.status(200).json({
+        session: dbSession,
+        responses: dbResponses || [],
+      });
+    }
+
+    return res.status(404).json({
+      error: { message: `Interview session '${sessionId}' not found.` },
     });
   } catch (err) {
     next(err);
@@ -122,33 +88,26 @@ export async function getReport(req, res, next) {
   try {
     const sessionId = req.params.id;
 
-    if (demoReportsStore.has(sessionId)) {
-      return res.status(200).json({ report: demoReportsStore.get(sessionId) });
+    // 1. Check in-memory completed report
+    const memReport = getCompletedReport(sessionId);
+    if (memReport) {
+      return res.status(200).json({ report: memReport });
     }
 
-    const { data: report, error } = await supabaseAdmin
+    // 2. Query PostgreSQL database
+    const { data: report } = await supabaseAdmin
       .from("interview_reports")
       .select("*")
       .eq("session_id", sessionId)
       .maybeSingle();
 
-    if (error || !report) {
-      const fallbackReport = {
-        id: `report-${sessionId}`,
-        session_id: sessionId,
-        overall_score: 84,
-        strengths_json: [
-          { area: "System Design", detail: "Strong understanding of caching topologies." }
-        ],
-        improvements_json: [
-          { area: "STAR Method", detail: "Quantify metrics explicitly." }
-        ],
-        summary_text: "Strong overall technical performance shown across microservice questions.",
-      };
-      return res.status(200).json({ report: fallbackReport });
+    if (report) {
+      return res.status(200).json({ report });
     }
 
-    return res.status(200).json({ report });
+    return res.status(404).json({
+      error: { message: `Report for session '${sessionId}' not found.` },
+    });
   } catch (err) {
     next(err);
   }
@@ -161,25 +120,23 @@ export async function getReport(req, res, next) {
 export async function listReports(req, res, next) {
   try {
     const userId = req.user.id;
+    const memoryReports = getCompletedReports(userId);
 
-    if (req.token && req.token.startsWith("demo-token-")) {
-      return res.status(200).json({
-        reports: Array.from(demoReportsStore.values()),
-      });
-    }
-
-    const { data: reports, error } = await supabaseAdmin
+    const { data: dbReports } = await supabaseAdmin
       .from("interview_reports")
       .select("*, interview_sessions!inner(user_id, title)")
       .eq("interview_sessions.user_id", userId);
 
-    if (error) {
-      return res.status(200).json({
-        reports: Array.from(demoReportsStore.values()),
-      });
+    const combined = [...memoryReports];
+    if (dbReports && dbReports.length > 0) {
+      for (const dbr of dbReports) {
+        if (!combined.some((r) => r.session_id === dbr.session_id)) {
+          combined.push(dbr);
+        }
+      }
     }
 
-    return res.status(200).json({ reports: reports || [] });
+    return res.status(200).json({ reports: combined });
   } catch (err) {
     next(err);
   }
@@ -187,7 +144,7 @@ export async function listReports(req, res, next) {
 
 /**
  * POST /api/interviews/:id/export
- * Placeholder export endpoint returning shareable metadata or PDF download link.
+ * Export endpoint returning download metadata.
  */
 export async function exportReport(req, res, next) {
   try {

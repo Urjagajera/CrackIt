@@ -33,6 +33,8 @@ export default function InterviewSetup() {
   };
 
   const handleStartInterview = () => {
+    const sessionId = `session-${Date.now()}`;
+    sessionStorage.setItem('interview_session_id', sessionId);
     sessionStorage.setItem('interview_persona', selectedPersona);
     sessionStorage.setItem('interview_type', interviewType);
     sessionStorage.setItem('interview_difficulty', difficulty);
@@ -41,7 +43,7 @@ export default function InterviewSetup() {
     sessionStorage.setItem('interview_topics', JSON.stringify(topics));
     
     showToast('Interview session configured. Launching session...', 'success');
-    navigate('/interview');
+    navigate(`/interview?session_id=${sessionId}`);
   };
 
   return (

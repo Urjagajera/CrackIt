@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 import { trimInput, isNonEmptyString } from '../lib/sanitize';
 import { TranscriptItem } from '../types';
@@ -38,6 +38,10 @@ export default function InterviewScreen() {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
 
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const sessionId = searchParams.get('session_id') || sessionStorage.getItem('interview_session_id') || `session-${Date.now()}`;
+
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -56,9 +60,9 @@ export default function InterviewScreen() {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
       wsRef.current.send(JSON.stringify({ type: 'end_session' }));
     }
-    showToast('Interview complete! Analysis reports are being generated.', 'success');
-    navigate('/reports');
-  }, [navigate, showToast]);
+    showToast('Interview complete! Analysis reports generated.', 'success');
+    navigate(`/interview-replay/${sessionId}`);
+  }, [navigate, showToast, sessionId]);
 
   // Connect to WebSocket Server
   useEffect(() => {
@@ -74,7 +78,7 @@ export default function InterviewScreen() {
         JSON.stringify({
           type: 'join_session',
           payload: {
-            session_id: 'demo-session-1',
+            session_id: sessionId,
             user_id: 'demo-user-urja-12345',
           },
         })

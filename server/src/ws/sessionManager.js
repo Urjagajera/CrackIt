@@ -17,9 +17,29 @@ const DEFAULT_QUESTIONS = [
 ];
 
 const activeSessions = new Map();
+const completedSessionsStore = new Map();
+const completedReportsStore = new Map();
 
 export function getActiveSession(sessionId) {
   return activeSessions.get(sessionId);
+}
+
+export function getCompletedSession(sessionId) {
+  return completedSessionsStore.get(sessionId);
+}
+
+export function getCompletedReport(sessionId) {
+  return completedReportsStore.get(sessionId);
+}
+
+export function getCompletedReports(userId) {
+  const userReports = [];
+  for (const report of completedReportsStore.values()) {
+    if (!userId || report.user_id === userId || userId.startsWith("demo-user-")) {
+      userReports.push(report);
+    }
+  }
+  return userReports;
 }
 
 export function createOrGetSession(sessionId, userId) {
@@ -255,6 +275,27 @@ export async function endSession(sessionId) {
 
   // Generate aggregate performance report
   const report = await generateReport(sessionId, session.userId);
+
+  const completedRecord = {
+    sessionId: session.sessionId,
+    userId: session.userId,
+    title: "Technical Mock Interview",
+    company: "Target Placement",
+    messages: session.messages,
+    responses: session.responses,
+    elapsedSeconds: session.elapsedSeconds,
+    created_at: new Date().toISOString(),
+  };
+
+  completedSessionsStore.set(sessionId, completedRecord);
+  if (report) {
+    completedReportsStore.set(sessionId, {
+      ...report,
+      user_id: session.userId,
+      title: "Technical Mock Interview",
+      created_at: new Date().toISOString(),
+    });
+  }
 
   broadcastToSession(session, {
     type: "session_completed",
