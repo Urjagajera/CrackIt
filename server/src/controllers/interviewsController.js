@@ -59,6 +59,7 @@ export async function getReplay(req, res, next) {
           overallScore: actualAverageScore,
           duration: `${mins} mins`,
           status: "completed",
+          video_url: completed.video_url || null,
         },
         transcript: completed.messages,
         responses: completed.responses,

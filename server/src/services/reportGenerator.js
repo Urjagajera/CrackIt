@@ -77,6 +77,34 @@ export async function generateReport(sessionId, userId, memoryResponses = []) {
 
     const narrative = await generateNarrativeSummary(responses, session);
 
+    // Aggregate emotion / body-language data from per-response face-api.js summaries
+    const emotionRecords = responses
+      .map((r) => r.emotion_summary_json)
+      .filter(Boolean);
+
+    let emotionSummary = null;
+    if (emotionRecords.length > 0) {
+      const dominantCounts = {};
+      let totalConfidence = 0;
+      let totalNervousness = 0;
+
+      for (const e of emotionRecords) {
+        dominantCounts[e.dominant_emotion] = (dominantCounts[e.dominant_emotion] || 0) + 1;
+        totalConfidence += typeof e.avg_confidence === "number" ? e.avg_confidence : 0;
+        totalNervousness += typeof e.avg_nervousness === "number" ? e.avg_nervousness : 0;
+      }
+
+      const overallDominant = Object.entries(dominantCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || "neutral";
+      emotionSummary = {
+        overall_dominant_emotion: overallDominant,
+        avg_confidence: Math.round((totalConfidence / emotionRecords.length) * 100),
+        avg_nervousness: Math.round((totalNervousness / emotionRecords.length) * 100),
+        response_count: emotionRecords.length,
+        breakdown: dominantCounts,
+      };
+      console.log(`😊 [Report] Emotion summary: ${JSON.stringify(emotionSummary)}`);
+    }
+
     const reportRow = {
       id: `report-${Date.now()}`,
       session_id: sessionId,
@@ -84,6 +112,7 @@ export async function generateReport(sessionId, userId, memoryResponses = []) {
       strengths_json: narrative.strengths,
       improvements_json: narrative.improvements,
       summary_text: narrative.summaryText,
+      emotion_summary_json: emotionSummary,
       created_at: new Date().toISOString(),
     };
 

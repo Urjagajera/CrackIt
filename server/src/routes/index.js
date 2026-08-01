@@ -10,6 +10,7 @@ import interviewsRouter from "./interviews.js";
 import analyticsRouter from "./analytics.js";
 import settingsRouter from "./settings.js";
 import notificationsRouter from "./notifications.js";
+import videoRouter from "./video.js";
 
 const router = Router();
 
@@ -23,6 +24,7 @@ router.use("/projects", projectsRouter);
 router.use("/analytics", analyticsRouter);
 router.use("/settings", settingsRouter);
 router.use("/notifications", notificationsRouter);
+router.use("/", videoRouter); // POST /api/interviews/:sessionId/video
 router.use("/", interviewsRouter);
 
 export default router;

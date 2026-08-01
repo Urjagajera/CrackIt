@@ -1,8 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 import { apiFetch } from '../lib/api';
 import TranscriptChatFeed from '../components/TranscriptChatFeed';
+
+const EMOTION_EMOJI: Record<string, string> = {
+  happy: '😊', sad: '😢', angry: '😠', fearful: '😨',
+  disgusted: '🤢', surprised: '😲', neutral: '😐',
+};
+
+const EMOTION_LABEL: Record<string, { color: string; label: string }> = {
+  happy: { color: 'text-green-600', label: 'Confident' },
+  neutral: { color: 'text-blue-500', label: 'Composed' },
+  surprised: { color: 'text-yellow-600', label: 'Attentive' },
+  fearful: { color: 'text-orange-500', label: 'Nervous' },
+  sad: { color: 'text-slate-500', label: 'Subdued' },
+  angry: { color: 'text-red-500', label: 'Tense' },
+  disgusted: { color: 'text-purple-500', label: 'Uncertain' },
+};
 
 export default function InterviewReplay() {
   const navigate = useNavigate();
@@ -14,6 +29,7 @@ export default function InterviewReplay() {
   const [transcript, setTranscript] = useState<any[]>([]);
   const [responses, setResponses] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const replayVideoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const sessionId = id || sessionStorage.getItem('interview_session_id') || 'demo-session-1';
@@ -172,8 +188,66 @@ export default function InterviewReplay() {
         </div>
       </div>
 
+      {/* ── Session Video Playback ──────────────────────────────────────────── */}
+      {session?.video_url && (
+        <div className="mb-8 p-5 bg-surface-container-lowest rounded-[24px] border border-surface-variant/30 shadow-sm">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="material-symbols-outlined text-primary">play_circle</span>
+            <h3 className="font-headline-md font-bold text-on-surface text-base">Session Recording</h3>
+            <span className="px-2.5 py-0.5 bg-tertiary-container text-on-tertiary-container text-[10px] font-bold rounded-full ml-auto">
+              Full Interview Video
+            </span>
+          </div>
+          <video
+            ref={replayVideoRef}
+            src={session.video_url}
+            controls
+            playsInline
+            className="w-full rounded-2xl bg-black max-h-[400px] shadow-md"
+          />
+          <p className="text-[10px] text-on-surface-variant mt-2 text-center">
+            Recorded using browser MediaRecorder API · Synchronized with transcript timeline below
+          </p>
+        </div>
+      )}
+
+      {/* ── Body Language & Confidence (from report emotion summary) ─────────── */}
+      {report?.emotion_summary_json && (
+        <div className="mb-8 p-5 bg-surface-container-lowest rounded-[24px] border border-surface-variant/30 shadow-sm">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="material-symbols-outlined text-secondary">face</span>
+            <h3 className="font-headline-md font-bold text-on-surface text-base">Body Language &amp; Confidence</h3>
+            <span className="text-xs text-on-surface-variant ml-auto">
+              {report.emotion_summary_json.response_count} response(s) analysed
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-4">
+            <div className="flex-1 min-w-[120px] p-4 bg-surface-container rounded-2xl border border-surface-variant/30 text-center">
+              <p className="text-2xl mb-1">{EMOTION_EMOJI[report.emotion_summary_json.overall_dominant_emotion] || '😐'}</p>
+              <p className="text-xs font-bold text-on-surface capitalize">{report.emotion_summary_json.overall_dominant_emotion}</p>
+              <p className="text-[10px] text-on-surface-variant">Dominant emotion</p>
+            </div>
+            <div className="flex-1 min-w-[120px] p-4 bg-tertiary-container/30 rounded-2xl border border-tertiary/20 text-center">
+              <p className="text-xl font-bold text-tertiary mb-1">
+                {Math.round((report.emotion_summary_json.avg_confidence || 0) * 100)}%
+              </p>
+              <p className="text-xs font-bold text-on-surface">Confidence</p>
+              <p className="text-[10px] text-on-surface-variant">Avg across session</p>
+            </div>
+            <div className="flex-1 min-w-[120px] p-4 bg-error/5 rounded-2xl border border-error/20 text-center">
+              <p className="text-xl font-bold text-error mb-1">
+                {Math.round((report.emotion_summary_json.avg_nervousness || 0) * 100)}%
+              </p>
+              <p className="text-xs font-bold text-on-surface">Nervousness</p>
+              <p className="text-[10px] text-on-surface-variant">Avg across session</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
         {/* Left Column: Chat Feed & Transcript (7 Columns) */}
+
         <div className="lg:col-span-7 space-y-gutter">
           {/* Transcript Feed Card */}
           <section className="glass-card rounded-[32px] p-6 shadow-[0_20px_50px_rgba(65,81,187,0.1)] relative border border-surface-variant/30 bg-surface-container-lowest">
@@ -275,9 +349,17 @@ export default function InterviewReplay() {
                           <span className="font-label-sm text-xs font-bold text-on-surface">
                             Q{idx + 1}: {resp.question_text || `Question ${idx + 1}`}
                           </span>
-                          <span className="px-2.5 py-0.5 bg-primary/10 text-primary text-[11px] font-bold rounded-full shrink-0 ml-2">
-                            Score: {score}%
-                          </span>
+                          <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                            {resp.emotion_summary_json && (
+                              <span className={`text-xs ${ EMOTION_LABEL[resp.emotion_summary_json.dominant_emotion]?.color || 'text-on-surface-variant'} font-semibold`}>
+                                {EMOTION_EMOJI[resp.emotion_summary_json.dominant_emotion]}{' '}
+                                {EMOTION_LABEL[resp.emotion_summary_json.dominant_emotion]?.label || resp.emotion_summary_json.dominant_emotion}
+                              </span>
+                            )}
+                            <span className="px-2.5 py-0.5 bg-primary/10 text-primary text-[11px] font-bold rounded-full">
+                              Score: {score}%
+                            </span>
+                          </div>
                         </div>
 
                         {/* Candidate Answer */}

@@ -43,6 +43,17 @@ export function getCompletedReports(userId) {
   return userReports;
 }
 
+/**
+ * Called by videoController after successful video upload.
+ * Updates the in-memory completed session so GET /replay can return video_url.
+ */
+export function setSessionVideoUrl(sessionId, videoUrl) {
+  const record = completedSessionsStore.get(sessionId);
+  if (record) {
+    record.video_url = videoUrl;
+  }
+}
+
 export function createOrGetSession(sessionId, userId) {
   let session = activeSessions.get(sessionId);
 
@@ -143,7 +154,9 @@ export async function processUserResponse(sessionId, payload) {
   const session = activeSessions.get(sessionId);
   if (!session) return;
 
-  const { audio_base64, text, response_time_sec } = payload;
+  // emotion_summary: { dominant_emotion, avg_confidence, avg_nervousness }
+  // provided by the browser's face-api.js aggregation; null in fallback/manual mode.
+  const { audio_base64, text, response_time_sec, emotion_summary } = payload;
   const currentQText = session.questions[session.currentQuestionIndex] || "Question";
 
   // 1. Transcribe audio if present via STT placeholder
@@ -190,6 +203,7 @@ export async function processUserResponse(sessionId, payload) {
     transcript,
     response_time_sec: response_time_sec || 45,
     score_json: scoring.score_json,
+    emotion_summary_json: emotion_summary || null,
   };
 
   session.responses.push(responseRecord);
@@ -204,6 +218,7 @@ export async function processUserResponse(sessionId, payload) {
         transcript,
         response_time_sec: response_time_sec || 45,
         score_json: scoring.score_json,
+        emotion_summary_json: emotion_summary || null,
       })
       .catch(() => {});
   }
@@ -285,6 +300,7 @@ export async function endSession(sessionId) {
     messages: session.messages,
     responses: session.responses,
     elapsedSeconds: session.elapsedSeconds,
+    video_url: null, // populated later by videoController after upload
     created_at: new Date().toISOString(),
   };
 
