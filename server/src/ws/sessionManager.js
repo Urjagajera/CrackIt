@@ -210,17 +210,46 @@ export async function processUserResponse(sessionId, payload) {
 
   // 4. Save to DB interview_responses if real UUID
   if (!sessionId.startsWith("demo-session-") && !sessionId.startsWith("session-")) {
-    await supabaseAdmin
-      .from("interview_responses")
-      .insert({
-        session_id: sessionId,
-        question_id: null,
-        transcript,
-        response_time_sec: response_time_sec || 45,
-        score_json: scoring.score_json,
-        emotion_summary_json: emotion_summary || null,
-      })
-      .catch(() => {});
+    try {
+      let { data: qRow } = await supabaseAdmin
+        .from("interview_questions")
+        .select("id")
+        .eq("session_id", sessionId)
+        .eq("question_text", currentQText)
+        .maybeSingle();
+
+      let questionId = qRow?.id;
+
+      if (!questionId) {
+        const { data: newQ } = await supabaseAdmin
+          .from("interview_questions")
+          .insert({
+            session_id: sessionId,
+            question_text: currentQText,
+            category: "mixed",
+            order_index: session.currentQuestionIndex,
+            generated_by: "ai",
+          })
+          .select("id")
+          .single();
+        questionId = newQ?.id;
+      }
+
+      if (questionId) {
+        await supabaseAdmin
+          .from("interview_responses")
+          .insert({
+            session_id: sessionId,
+            question_id: questionId,
+            transcript,
+            response_time_sec: response_time_sec || 45,
+            score_json: scoring.score_json,
+            emotion_summary_json: emotion_summary || null,
+          });
+      }
+    } catch (err) {
+      console.warn("⚠️ Database response save failed:", err.message);
+    }
   }
 
   broadcastToSession(session, {

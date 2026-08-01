@@ -12,6 +12,11 @@ ALTER TABLE interview_sessions
 ALTER TABLE interview_responses
   ADD COLUMN IF NOT EXISTS emotion_summary_json JSONB;
 
+-- Add emotion_summary_json to interview_reports (session summary)
+ALTER TABLE interview_reports
+  ADD COLUMN IF NOT EXISTS emotion_summary_json JSONB;
+
+
 COMMENT ON COLUMN interview_sessions.video_url IS
   'URL to session recording in Supabase Storage bucket interview-videos';
 

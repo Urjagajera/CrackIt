@@ -1,7 +1,6 @@
 import { supabaseAdmin } from "../config/supabase.js";
 import multer from "multer";
 import {
-  getCompletedSession,
   setSessionVideoUrl,
 } from "../ws/sessionManager.js";
 

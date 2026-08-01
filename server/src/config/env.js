@@ -19,12 +19,17 @@ const envSchema = z.object({
     .default("4000")
     .transform(Number)
     .pipe(z.number().int().positive()),
+  // 'staging' is a valid runtime environment
   NODE_ENV: z
-    .enum(["development", "production", "test"])
+    .enum(["development", "production", "test", "staging"])
     .default("development"),
   CORS_ORIGINS: z
     .string()
     .default("http://localhost:5173"),
+  // Optional — used by auth flows that need server-side JWT signing (not Supabase sessions)
+  JWT_SECRET: z
+    .string()
+    .optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

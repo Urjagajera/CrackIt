@@ -123,6 +123,7 @@ export async function generateReport(sessionId, userId, memoryResponses = []) {
         strengths_json: narrative.strengths,
         improvements_json: narrative.improvements,
         summary_text: narrative.summaryText,
+        emotion_summary_json: emotionSummary,
       }).catch(() => {});
     }
 

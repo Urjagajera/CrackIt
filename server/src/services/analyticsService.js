@@ -63,32 +63,61 @@ export async function calculateAnalytics(userId, period = "month") {
   });
 
   // 3. Compute overall average score & percentile
+  const sessionCount = filteredReports.length;
+  let averageScore = 0;
   let totalScore = 0;
   for (const r of filteredReports) {
-    totalScore += r.overall_score || 85;
+    totalScore += Number(r.overall_score) || 0;
+  }
+  if (sessionCount > 0) {
+    averageScore = Math.round(totalScore / sessionCount);
   }
 
-  const sessionCount = filteredReports.length;
-  const averageScore = sessionCount > 0 ? Math.round(totalScore / sessionCount) : 86;
-  const percentileStr = averageScore >= 90 ? "Top 3%" : averageScore >= 80 ? "Top 5%" : "Top 15%";
+  const percentileStr = sessionCount === 0 ? "N/A" : averageScore >= 90 ? "Top 3%" : averageScore >= 80 ? "Top 5%" : "Top 15%";
 
-  // 4. Generate readiness trend points
-  const trendPoints = [
-    { period: "Week 1", score: Math.max(60, averageScore - 14) },
-    { period: "Week 2", score: Math.max(65, averageScore - 9) },
-    { period: "Week 3", score: Math.max(70, averageScore - 5) },
-    { period: "Week 4", score: Math.max(75, averageScore - 2) },
-    { period: "Present", score: averageScore },
-  ];
+  // 4. Generate readiness trend points dynamically based on actual reports if available
+  let trendPoints = [];
+  let changePercent = "0%";
+  if (sessionCount > 0) {
+    const sorted = [...filteredReports].sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0));
+    if (sorted.length === 1) {
+      trendPoints = [
+        { period: "Baseline", score: Math.max(50, averageScore - 10) },
+        { period: "Present", score: averageScore }
+      ];
+      changePercent = "+0.0%";
+    } else {
+      const firstVal = Number(sorted[0].overall_score) || 0;
+      const lastVal = Number(sorted[sorted.length - 1].overall_score) || 0;
+      const diff = lastVal - firstVal;
+      changePercent = (diff >= 0 ? "+" : "") + diff.toFixed(1) + "%";
 
-  // 5. Compute skill breakdown
-  const problemSolving = Math.min(98, Math.max(60, averageScore + 4));
-  const communication = Math.min(95, Math.max(55, averageScore - 6));
-  const systemDesign = Math.min(92, Math.max(50, averageScore - 10));
+      // Distribute points across sorted logs
+      const step = Math.max(1, Math.floor(sorted.length / 5));
+      for (let i = 0; i < sorted.length; i += step) {
+        trendPoints.push({
+          period: `Session ${i + 1}`,
+          score: Math.round(Number(sorted[i].overall_score) || 0),
+        });
+      }
+      if (!trendPoints.some((p) => p.period === "Present")) {
+        trendPoints.push({ period: "Present", score: averageScore });
+      }
+    }
+  } else {
+    trendPoints = [
+      { period: "No Data", score: 0 }
+    ];
+  }
+
+  // 5. Compute skill breakdown dynamically based on actual average score
+  const problemSolving = sessionCount === 0 ? 0 : Math.min(100, Math.max(0, averageScore + 4));
+  const communication = sessionCount === 0 ? 0 : Math.min(100, Math.max(0, averageScore - 6));
+  const systemDesign = sessionCount === 0 ? 0 : Math.min(100, Math.max(0, averageScore - 10));
 
   // 6. Compute topic mastery & weak preparation areas
-  const topStrengths = ["Data Structures & Algorithms", "Behavioral Leadership"];
-  const growthAreas = ["System Design & Caching", "Cloud Architecture"];
+  const topStrengths = sessionCount === 0 ? [] : ["Data Structures & Algorithms", "Behavioral Leadership"];
+  const growthAreas = sessionCount === 0 ? [] : ["System Design & Caching", "Cloud Architecture"];
 
   const recommendedTopics = [
     {
@@ -114,19 +143,19 @@ export async function calculateAnalytics(userId, period = "month") {
     },
   ];
 
-  const topicsNeedingPreparation = [
+  const topicsNeedingPreparation = sessionCount === 0 ? [] : [
     {
       id: 101,
       title: "Kubernetes Container Orchestration",
       category: "DevOps / Infrastructure",
-      score: 65,
+      score: Math.min(80, Math.max(50, averageScore - 15)),
       reason: "Flagged from low score response in recent practice round.",
     },
     {
       id: 102,
       title: "Database Failover & Recovery Strategy",
       category: "System Resilience",
-      score: 72,
+      score: Math.min(85, Math.max(55, averageScore - 8)),
       reason: "Need more quantitative metrics in resolution explanation.",
     },
   ];
@@ -135,14 +164,14 @@ export async function calculateAnalytics(userId, period = "month") {
     period,
     readinessTrend: {
       current: averageScore,
-      changePercent: "+12.4%",
+      changePercent,
       trendPoints,
     },
     overallStats: {
       averageScore,
       percentile: percentileStr,
-      totalSessions: sessionCount > 0 ? sessionCount : 4,
-      streakDays: Math.min(30, Math.max(3, sessionCount * 2 + 1)),
+      totalSessions: sessionCount,
+      streakDays: sessionCount === 0 ? 0 : Math.min(30, Math.max(3, sessionCount * 2 + 1)),
     },
     skillBreakdown: {
       problemSolving,

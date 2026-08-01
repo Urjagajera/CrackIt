@@ -49,9 +49,13 @@ async function runLoadTest() {
             JSON.stringify({
               type: "submit_response",
               payload: {
-                session_id: sessionId,
-                audio_data: "base64-loadtest-audio-data-chunk",
-                mime_type: "audio/webm",
+                text: "I resolved team database scaling bottleneck by implementing Redis caching and sharding primary node.",
+                response_time_sec: 45,
+                emotion_summary: {
+                  dominant_emotion: "happy",
+                  avg_confidence: 0.95,
+                  avg_nervousness: 0.05,
+                },
               },
             })
           );
