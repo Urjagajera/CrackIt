@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 import { useAuth } from '../context/AuthContext';
 import { trimInput, isNonEmptyString } from '../lib/sanitize';
+import HexMeshBackground from '../components/HexMeshBackground';
 
 interface LoginProps {
   onLogin?: () => void;
@@ -71,7 +72,8 @@ export default function Login({ onLogin }: LoginProps) {
   };
 
   return (
-    <div className="bg-mesh min-h-screen flex flex-col font-body-md text-on-surface">
+    <div className="relative bg-mesh min-h-screen flex flex-col font-body-md text-on-surface">
+      <HexMeshBackground />
       {/* Top Navigation */}
       <header className="sticky top-0 z-50 flex justify-between items-center px-6 py-3 rounded-full mt-4 mx-auto w-[95%] max-w-container-max bg-surface/80 backdrop-blur-md shadow-[0_10px_30px_rgba(65,81,187,0.08)]">
         <div className="flex items-center gap-2">

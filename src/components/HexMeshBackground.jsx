@@ -31,8 +31,8 @@ const COLORS = {
 };
 
 // ── Grid / geometry constants ────────────────────────────────────────────────
-const HEX_RADIUS = 38;                 // flat-top radius (px)
-const HEX_SPACING = 4;                 // gap between hexagons
+const HEX_RADIUS = 21.375;              // flat-top radius (px) — 25% smaller than previous 28.5
+const HEX_SPACING = 2.25;              // gap between hexagons (scaled proportionally)
 const SQRT3 = Math.sqrt(3);
 const COL_STEP = (HEX_RADIUS + HEX_SPACING) * 1.5;
 const ROW_STEP = (HEX_RADIUS + HEX_SPACING) * SQRT3;
@@ -45,9 +45,9 @@ const INFLUENCE_RADIUS_PX = INFLUENCE_RADIUS_HEXES * HEX_RADIUS * 1.6;
 const ACTIVATION_LERP = 0.07;           // ~350ms to reach target at 60fps
 const RECOVERY_LERP = 0.035;            // ~500ms recovery (slightly slower)
 const ELASTIC_AMOUNT = 0.025;           // subtle elastic overshoot on recovery
-const IDLE_BREATH_SPEED = 0.0004;       // extremely slow sinusoidal cycle
-const IDLE_BREATH_AMP = 0.035;          // opacity wobble amplitude
-const IDLE_WAVE_SPREAD = 0.08;          // phase offset per hex index for traveling wave
+const IDLE_BREATH_SPEED = 0.0008;       // slow sinusoidal breathing rhythm
+const IDLE_BREATH_AMP = 0.04;           // opacity pulse amplitude for clear breathing feel
+const IDLE_WAVE_SPREAD = 0.0;           // 0 = uniform breathing (all hexagons pulse together)
 
 // ── Hex animated-state defaults ──────────────────────────────────────────────
 const DEFAULT_STATE = {
@@ -281,11 +281,11 @@ export default function HexMeshBackground() {
 
         // ── Idle breathing ─────────────────────────────────────────────
         const breath = Math.sin(elapsed * IDLE_BREATH_SPEED + hex.idx * IDLE_WAVE_SPREAD);
-        const idleOpacity = 0.08 + breath * IDLE_BREATH_AMP;
+        const idleOpacity = 0.165 + breath * IDLE_BREATH_AMP;
 
         // Composite opacity: idle base + interaction boost
         const finalOpacity = Math.min(1, idleOpacity + hex.opacity);
-        const finalStrokeWidth = 0.5 + hex.strokeWidth;
+        const finalStrokeWidth = 0.6 + hex.strokeWidth;
         const finalScale = 1 + hex.scale;
         const drawRadius = HEX_RADIUS * finalScale;
         const drawCx = hex.cx + hex.dx;
@@ -293,7 +293,7 @@ export default function HexMeshBackground() {
 
         // Skip off-screen hexagons
         if (drawCx + drawRadius < -20 || drawCx - drawRadius > w + 20 ||
-            drawCy + drawRadius < -20 || drawCy - drawRadius > h + 20) {
+          drawCy + drawRadius < -20 || drawCy - drawRadius > h + 20) {
           continue;
         }
 

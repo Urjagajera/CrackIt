@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 import { useAuth } from '../context/AuthContext';
 import { trimInput, isNonEmptyString } from '../lib/sanitize';
+import HexMeshBackground from '../components/HexMeshBackground';
 
 interface SignupProps {
   onLogin?: () => void;
@@ -49,7 +50,8 @@ export default function Signup({ onLogin }: SignupProps) {
   };
 
   return (
-    <div className="font-body-md text-body-md overflow-x-hidden bg-background text-on-surface">
+    <div className="relative font-body-md text-body-md overflow-x-hidden bg-background text-on-surface min-h-screen flex flex-col">
+      <HexMeshBackground />
       {/* Top Navigation */}
       <header className="sticky top-0 z-50 flex justify-between items-center px-6 py-3 bg-surface/80 backdrop-blur-md rounded-full mt-4 mx-auto w-[95%] max-w-container-max shadow-[0_10px_30px_rgba(65,81,187,0.08)]">
         <div className="flex items-center gap-2">
@@ -71,7 +73,7 @@ export default function Signup({ onLogin }: SignupProps) {
       </header>
 
       {/* Main Content */}
-      <main className="py-16 px-margin-mobile md:px-margin-desktop flex items-center justify-center">
+      <main className="flex-1 flex items-center justify-center px-margin-mobile md:px-margin-desktop py-6 min-h-0">
         <div className="w-full max-w-[1100px] grid md:grid-cols-2 gap-12 items-center text-left">
           
           {/* Left Column: Value Prop */}
@@ -195,7 +197,7 @@ export default function Signup({ onLogin }: SignupProps) {
       </main>
 
       {/* Footer */}
-      <footer className="w-full py-12 px-margin-desktop bg-surface-container-highest flex flex-col md:flex-row justify-between items-center gap-gutter text-center md:text-left border-t border-surface-variant/30">
+      <footer className="shrink-0 w-full py-6 px-margin-mobile md:px-margin-desktop bg-surface-container-highest flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left border-t border-surface-variant/30">
         <div className="flex flex-col items-center md:items-start gap-2">
           <span className="font-headline-md text-headline-md font-extrabold text-primary">CrackIt</span>
           <p className="font-body-md text-body-md text-on-surface-variant opacity-80">© 2026 CrackIt AI. Friendly Professional Mentor.</p>
