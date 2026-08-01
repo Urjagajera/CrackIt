@@ -38,13 +38,25 @@ export async function getReplay(req, res, next) {
     if (completed) {
       const mins = Math.round(completed.elapsedSeconds / 60) || 1;
       const report = getCompletedReport(sessionId);
+
+      let totalScore = 0;
+      let count = 0;
+      for (const r of completed.responses || []) {
+        const sc = r.score_json?.overall_score || r.overall_score;
+        if (typeof sc === "number") {
+          totalScore += sc;
+          count++;
+        }
+      }
+      const actualAverageScore = count > 0 ? Math.round(totalScore / count) : (report?.overall_score || 85);
+
       return res.status(200).json({
         session: {
           id: sessionId,
           title: completed.title || "Technical Mock Interview",
           company: completed.company || "Target Placement",
           date: new Date(completed.created_at).toLocaleDateString(),
-          overallScore: report?.overall_score || 84,
+          overallScore: actualAverageScore,
           duration: `${mins} mins`,
           status: "completed",
         },

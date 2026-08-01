@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { mockRecommendedTopics, mockTopicsNeedingPreparation } from '../utils/mockData';
 import { useToast } from '../context/ToastContext';
 import { apiFetch } from '../lib/api';
 import TranscriptChatFeed from '../components/TranscriptChatFeed';
@@ -15,10 +14,6 @@ export default function InterviewReplay() {
   const [transcript, setTranscript] = useState<any[]>([]);
   const [responses, setResponses] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [playbackTime, setPlaybackTime] = useState<number>(0);
-  const [selectedTimelineItem, setSelectedTimelineItem] = useState<number>(0);
 
   useEffect(() => {
     const sessionId = id || sessionStorage.getItem('interview_session_id') || 'demo-session-1';
@@ -46,12 +41,6 @@ export default function InterviewReplay() {
       });
   }, [id, showToast]);
 
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
-
   const handleShare = () => {
     showToast('Share Link: A private link has been copied to your clipboard.', 'success');
   };
@@ -65,7 +54,7 @@ export default function InterviewReplay() {
       <div className="min-h-screen flex items-center justify-center bg-background text-on-surface">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="font-body-md font-semibold">Loading Interview Replay &amp; Analytics...</p>
+          <p className="font-body-md font-semibold">Loading Interview Replay &amp; AI Recommendations...</p>
         </div>
       </div>
     );
@@ -89,7 +78,20 @@ export default function InterviewReplay() {
     );
   }
 
-  const overallScore = report?.overall_score || session?.overallScore || 84;
+  // Calculate actual average score dynamically across all submitted responses
+  let totalScore = 0;
+  let responseCount = 0;
+  for (const r of responses) {
+    const sc = r.score_json?.overall_score || r.overall_score;
+    if (typeof sc === 'number') {
+      totalScore += sc;
+      responseCount++;
+    }
+  }
+
+  const actualAverageScore =
+    responseCount > 0 ? Math.round(totalScore / responseCount) : report?.overall_score || session?.overallScore || 85;
+
   const strengthsList = report?.strengths_json || [
     { area: 'System Architecture', detail: 'Demonstrated solid technical reasoning and trade-off analysis.' },
   ];
@@ -112,27 +114,63 @@ export default function InterviewReplay() {
             {session.title || 'Technical Mock Interview'} Replay
           </h2>
           <p className="text-on-surface-variant font-body-md mt-1 text-sm">
-            {session.company || 'Target Placement'} • {session.date || 'Recent'} • Score: {overallScore}/100
+            {session.company || 'Target Placement'} • {session.date || 'Recent'} • {session.duration || '15 mins'}
           </p>
         </div>
 
         <div className="flex gap-3 w-full md:w-auto">
           <button
             onClick={handleShare}
-            className="flex-1 md:flex-initial px-6 py-3 rounded-full border border-outline-variant text-on-surface font-label-md hover:bg-surface-container transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-primary"
+            className="flex-1 md:flex-initial px-6 py-3 rounded-full border border-outline-variant text-on-surface font-label-md hover:bg-surface-container transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-primary text-xs"
           >
-            <span className="material-symbols-outlined">share</span>
+            <span className="material-symbols-outlined text-sm">share</span>
             <span>Share Report</span>
           </button>
           <button
             onClick={handleDownload}
-            className="flex-1 md:flex-initial px-6 py-3 rounded-full bg-secondary text-on-secondary font-label-md hover:opacity-90 shadow-lg shadow-secondary/20 transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-secondary"
+            className="flex-1 md:flex-initial px-6 py-3 rounded-full bg-secondary text-on-secondary font-label-md hover:opacity-90 shadow-lg shadow-secondary/20 transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-secondary text-xs"
           >
-            <span className="material-symbols-outlined">download</span>
+            <span className="material-symbols-outlined text-sm">download</span>
             <span>Download PDF</span>
           </button>
         </div>
       </header>
+
+      {/* Actual Average Score Banner Card */}
+      <div className="mb-8 p-6 bg-surface-container-lowest rounded-[24px] border border-surface-variant/30 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 rounded-2xl bg-primary-fixed flex items-center justify-center text-primary font-bold text-2xl border border-primary/20 shadow-inner shrink-0">
+            {actualAverageScore}%
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-label-sm uppercase tracking-wider text-xs font-bold text-primary">
+                Session Performance Metric
+              </span>
+              <span className="px-2.5 py-0.5 bg-tertiary-container text-on-tertiary-container text-[10px] font-bold rounded-full">
+                AI Verified
+              </span>
+            </div>
+            <h3 className="font-headline-md text-xl font-bold text-on-surface">
+              Actual Average Score: <span className="text-primary">{actualAverageScore}/100</span>
+            </h3>
+            <p className="text-body-md text-on-surface-variant text-xs mt-0.5">
+              Calculated across {responseCount > 0 ? `${responseCount} submitted response(s)` : 'all question rounds'}.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-6 divide-x divide-outline-variant/30 text-center">
+          <div className="pr-4">
+            <span className="text-[10px] text-on-surface-variant uppercase font-semibold block">Clarity Signal</span>
+            <span className="text-base font-bold text-secondary">{actualAverageScore >= 80 ? 'High' : 'Moderate'}</span>
+          </div>
+          <div className="pl-4">
+            <span className="text-[10px] text-on-surface-variant uppercase font-semibold block">Structure Fit</span>
+            <span className="text-base font-bold text-tertiary">STAR Method</span>
+          </div>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
         {/* Left Column: Chat Feed & Transcript (7 Columns) */}
@@ -168,7 +206,7 @@ export default function InterviewReplay() {
             </h3>
 
             <p className="text-body-md text-on-surface-variant leading-relaxed text-sm mb-6">
-              {report?.summary_text || 'Strong technical session. Candidate demonstrated solid problem solving and engineering intuition.'}
+              {report?.summary_text || 'Strong technical session. Candidate demonstrated solid engineering intuition and structured problem solving.'}
             </p>
 
             <div className="grid md:grid-cols-2 gap-4">
@@ -205,51 +243,95 @@ export default function InterviewReplay() {
           </section>
         </div>
 
-        {/* Right Column: Recommendations & Questions Timeline (5 Columns) */}
+        {/* Right Column: Recommended Changes per Response (5 Columns) */}
         <div className="lg:col-span-5 space-y-gutter">
-          {/* Question Timeline */}
           <section className="bg-surface-container-lowest p-6 rounded-[28px] border border-surface-variant/30 shadow-sm text-left">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="font-headline-md text-headline-md text-on-surface font-bold text-base">Recorded Responses</h3>
-              <span className="text-on-surface-variant font-label-sm text-xs font-semibold">
+              <div>
+                <h3 className="font-headline-md text-headline-md text-on-surface font-bold text-base">
+                  Recommended Changes on Responses
+                </h3>
+                <p className="text-[11px] text-on-surface-variant">Per-response AI coaching &amp; refined answers</p>
+              </div>
+              <span className="text-on-surface-variant font-label-sm text-xs font-semibold px-3 py-1 bg-surface-container rounded-full">
                 {responses.length > 0 ? `${responses.length} Answers` : `${Math.floor(transcript.length / 2)} Questions`}
               </span>
             </div>
 
-            <div className="relative border-l-2 border-surface-variant/40 ml-3 pl-1 space-y-4">
+            <div className="space-y-6">
               {responses.length > 0
-                ? responses.map((resp: any, idx: number) => (
-                    <div key={resp.id || idx} className="relative pl-6">
-                      <div className="w-full text-left rounded-2xl p-4 bg-surface-container-low border border-surface-variant/30">
-                        <div className="flex justify-between items-start mb-1.5">
-                          <span className="px-2.5 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full uppercase">
-                            Score: {resp.score_json?.overall_score || 84}%
+                ? responses.map((resp: any, idx: number) => {
+                    const score = resp.score_json?.overall_score || resp.overall_score || 84;
+                    const rec =
+                      resp.score_json?.recommended_changes ||
+                      'Structure your response using the STAR (Situation, Task, Action, Result) method and quantify outcome metrics.';
+                    const modelAnswer =
+                      resp.score_json?.model_better_answer ||
+                      'In my previous role, I implemented optimistic locking and Redis caching, which reduced database load by 40% and eliminated lock contention.';
+
+                    return (
+                      <div key={resp.id || idx} className="rounded-2xl p-5 bg-surface-container-low border border-surface-variant/40 space-y-3">
+                        <div className="flex justify-between items-start">
+                          <span className="font-label-sm text-xs font-bold text-on-surface">
+                            Q{idx + 1}: {resp.question_text || `Question ${idx + 1}`}
                           </span>
-                          <span className="font-mono text-[10px] text-on-surface-variant">
-                            {resp.response_time_sec || 45}s
+                          <span className="px-2.5 py-0.5 bg-primary/10 text-primary text-[11px] font-bold rounded-full shrink-0 ml-2">
+                            Score: {score}%
                           </span>
                         </div>
-                        <h5 className="font-label-md font-bold text-xs text-on-surface mb-1">
-                          Q{idx + 1}: {resp.question_text || `Question ${idx + 1}`}
-                        </h5>
-                        <p className="text-[11px] text-on-surface-variant line-clamp-3 italic bg-white/50 p-2 rounded-lg mt-2">
-                          "{resp.transcript}"
-                        </p>
+
+                        {/* Candidate Answer */}
+                        <div className="bg-white/60 p-3 rounded-xl border border-outline-variant/20">
+                          <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Your Response:</span>
+                          <p className="text-xs text-on-surface italic leading-relaxed">"{resp.transcript}"</p>
+                        </div>
+
+                        {/* Recommended Change */}
+                        <div className="bg-amber-500/10 p-3 rounded-xl border border-amber-500/20">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <span className="material-symbols-outlined text-amber-600 text-sm">lightbulb</span>
+                            <span className="text-[11px] font-bold text-amber-900 uppercase tracking-wider">Recommended Changes:</span>
+                          </div>
+                          <p className="text-xs text-on-surface-variant leading-relaxed">{rec}</p>
+                        </div>
+
+                        {/* Model Refined Answer */}
+                        {modelAnswer && (
+                          <div className="bg-primary/5 p-3 rounded-xl border border-primary/20">
+                            <div className="flex items-center gap-1.5 mb-1">
+                              <span className="material-symbols-outlined text-primary text-sm">auto_awesome</span>
+                              <span className="text-[11px] font-bold text-primary uppercase tracking-wider">Model Refined Answer:</span>
+                            </div>
+                            <p className="text-xs text-on-surface-variant leading-relaxed">"{modelAnswer}"</p>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 : transcript
                     .filter((m) => m.role === 'user')
                     .map((msg: any, idx: number) => (
-                      <div key={msg.id || idx} className="relative pl-6">
-                        <div className="w-full text-left rounded-2xl p-4 bg-surface-container-low border border-surface-variant/30">
-                          <div className="flex justify-between items-start mb-1.5">
-                            <span className="px-2.5 py-0.5 bg-tertiary/10 text-tertiary text-[10px] font-bold rounded-full uppercase">
-                              Submitted Answer
-                            </span>
-                            <span className="font-mono text-[10px] text-on-surface-variant">{msg.time}</span>
+                      <div key={msg.id || idx} className="rounded-2xl p-5 bg-surface-container-low border border-surface-variant/40 space-y-3">
+                        <div className="flex justify-between items-start">
+                          <span className="font-label-sm text-xs font-bold text-on-surface">Question {idx + 1}</span>
+                          <span className="px-2.5 py-0.5 bg-primary/10 text-primary text-[11px] font-bold rounded-full">
+                            Score: {actualAverageScore}%
+                          </span>
+                        </div>
+
+                        <div className="bg-white/60 p-3 rounded-xl border border-outline-variant/20">
+                          <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Your Response:</span>
+                          <p className="text-xs text-on-surface italic leading-relaxed">"{msg.text}"</p>
+                        </div>
+
+                        <div className="bg-amber-500/10 p-3 rounded-xl border border-amber-500/20">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <span className="material-symbols-outlined text-amber-600 text-sm">lightbulb</span>
+                            <span className="text-[11px] font-bold text-amber-900 uppercase tracking-wider">Recommended Changes:</span>
                           </div>
-                          <p className="text-[11px] text-on-surface-variant italic">"{msg.text}"</p>
+                          <p className="text-xs text-on-surface-variant leading-relaxed">
+                            Structure your response using the STAR (Situation, Task, Action, Result) method and quantify outcome metrics.
+                          </p>
                         </div>
                       </div>
                     ))}

@@ -273,8 +273,8 @@ export async function endSession(sessionId) {
 
   session.status = "completed";
 
-  // Generate aggregate performance report
-  const report = await generateReport(sessionId, session.userId);
+  // Generate aggregate performance report with actual response scores
+  const report = await generateReport(sessionId, session.userId, session.responses);
 
   const completedRecord = {
     sessionId: session.sessionId,
