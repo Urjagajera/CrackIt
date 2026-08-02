@@ -1,7 +1,10 @@
 import React, { useEffect, useState, FormEvent, MouseEvent } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 import { trimInput, isNonEmptyString } from '../lib/sanitize';
+import HexMeshBackground from '../components/HexMeshBackground';
+import PublicNavbar from '../components/PublicNavbar';
+import PublicFooter from '../components/PublicFooter';
 
 interface LoginProps {
   onLogin?: () => void;
@@ -50,27 +53,10 @@ export default function Login({ onLogin }: LoginProps) {
   };
 
   return (
-    <div className="bg-mesh min-h-screen flex flex-col font-body-md text-on-surface">
+    <div className="relative min-h-screen flex flex-col font-body-md text-on-surface overflow-x-hidden">
+      <HexMeshBackground />
       {/* Top Navigation */}
-      <header className="sticky top-0 z-50 flex justify-between items-center px-6 py-3 rounded-full mt-4 mx-auto w-[95%] max-w-container-max bg-surface/80 backdrop-blur-md shadow-[0_10px_30px_rgba(65,81,187,0.08)]">
-        <div className="flex items-center gap-2">
-          <Link to="/" className="text-headline-md font-headline-md font-extrabold text-primary">CrackIt</Link>
-        </div>
-        <nav className="hidden md:flex gap-gutter items-center">
-          <Link className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors focus:outline-none focus:ring-1 focus:ring-primary rounded" to="/#features">Features</Link>
-          <Link className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors focus:outline-none focus:ring-1 focus:ring-primary rounded" to="/#how-it-works">How It Works</Link>
-          <Link className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors focus:outline-none focus:ring-1 focus:ring-primary rounded" to="/#faq">FAQ</Link>
-        </nav>
-        <div className="flex items-center gap-4">
-          <span className="font-label-md text-label-md text-on-surface-variant hidden md:block">New to CrackIt?</span>
-          <button 
-            onClick={() => navigate('/signup')} 
-            className="px-6 py-2.5 bg-primary-fixed text-on-primary-fixed rounded-full font-label-md text-label-md hover:scale-105 transition-transform active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary"
-          >
-            Sign Up
-          </button>
-        </div>
-      </header>
+      <PublicNavbar className="sticky top-0 mt-4 mx-auto" />
 
       {/* Main Form */}
       <main className="flex-grow flex items-center justify-center px-margin-mobile md:px-margin-desktop pb-margin-mobile md:pb-margin-desktop">
@@ -170,18 +156,7 @@ export default function Login({ onLogin }: LoginProps) {
       </main>
       
       {/* Footer */}
-      <footer className="w-full py-12 px-margin-desktop bg-surface-container-highest flex flex-col md:flex-row justify-between items-center gap-gutter text-center md:text-left">
-        <div className="flex flex-col items-center md:items-start gap-2">
-          <span className="font-headline-md text-headline-md font-extrabold text-primary">CrackIt</span>
-          <p className="font-body-md text-body-md text-on-surface-variant opacity-80">© 2026 CrackIt AI. Friendly Professional Mentor.</p>
-        </div>
-        <nav className="flex flex-wrap justify-center gap-6 mt-4 md:mt-0">
-          <a className="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Privacy Policy</a>
-          <a className="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Terms of Service</a>
-          <a className="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Cookie Policy</a>
-          <a className="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Support</a>
-        </nav>
-      </footer>
+      <PublicFooter />
     </div>
   );
 }

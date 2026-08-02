@@ -10,15 +10,14 @@ export default function InterviewSetup() {
   const [selectedPersona, setSelectedPersona] = useState<string>(mockPersonas[0].id);
   const [interviewType, setInterviewType] = useState<string>('Technical');
   const [difficulty, setDifficulty] = useState<string>('Mid/Senior');
-  const [numQuestions, setNumQuestions] = useState<string>('10 Questions');
-  const [language, setLanguage] = useState<string>('English (US)');
+  const [numQuestions] = useState<string>('10 Questions');
+  const [language] = useState<string>('English (US)');
   const [topics, setTopics] = useState<string[]>(['React.js', 'System Design']);
   const [newTopic, setNewTopic] = useState<string>('');
   const [isAddingTopic, setIsAddingTopic] = useState<boolean>(false);
 
   // Toggle settings
   const [voiceAudio, setVoiceAudio] = useState<boolean>(true);
-  const [cameraPreview, setCameraPreview] = useState<boolean>(false);
   const [realtimeTranscripts, setRealtimeTranscripts] = useState<boolean>(true);
 
   const handleAddTopicSubmit = (e: FormEvent) => {

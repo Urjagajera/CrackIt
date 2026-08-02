@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi } from 'vitest';
 import Login from '../pages/Login';
 import { ToastProvider } from '../context/ToastContext';
@@ -8,9 +8,9 @@ import { ToastProvider } from '../context/ToastContext';
 const renderLogin = (onLogin = vi.fn()) => {
   return render(
     <ToastProvider>
-      <BrowserRouter>
+      <MemoryRouter initialEntries={['/login']}>
         <Login onLogin={onLogin} />
-      </BrowserRouter>
+      </MemoryRouter>
     </ToastProvider>
   );
 };

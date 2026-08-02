@@ -1,5 +1,4 @@
 import React, { useState, ChangeEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { mockProjectIntel } from '../utils/mockData';
 import { useToast } from '../context/ToastContext';
 import { ProjectIntelItem } from '../types';
@@ -12,10 +11,8 @@ interface QuestionItem {
   question: string;
 }
 
-export default function ProjectIntel() {
-  const navigate = useNavigate();
+export default function ProjectIntelligence() {
   const { showToast } = useToast();
-  const [projects] = useState<ProjectIntelItem[]>(mockProjectIntel);
   const [activeProject] = useState<ProjectIntelItem>(mockProjectIntel[0]);
   const [questions, setQuestions] = useState<QuestionItem[]>([
     {

@@ -9,30 +9,26 @@ import React, { useEffect, useRef, useCallback } from 'react';
 
   Colors are derived from the CrackIt Tailwind palette so this component
   integrates with the landing page without hardcoding unrelated values.
-──────────────────────────────────────────────────────────────────────────────*/
+  ──────────────────────────────────────────────────────────────────────────────*/
 
 // ── Theme colors (pulled from tailwind.config.js) ────────────────────────────
 const COLORS = {
   background: '#fcf9f4',
-  // Idle hex outline – faint lavender-gray (outline-variant from theme)
   idleStroke: 'rgba(198, 197, 213, 0.10)',
-  // Active hex outline – primary indigo (lightened by 25%)
   activeStrokeR: 110,
   activeStrokeG: 123,
   activeStrokeB: 205,
-  // Glow – primary at very low alpha (lightened by 25%)
   glowR: 110,
   glowG: 123,
   glowB: 205,
-  // Subtle fill darkening on hover – surface-variant tone
   fillR: 198,
   fillG: 197,
   fillB: 213,
 };
 
 // ── Grid / geometry constants ────────────────────────────────────────────────
-const HEX_RADIUS = 21.375;              // flat-top radius (px) — 25% smaller than previous 28.5
-const HEX_SPACING = 2.25;              // gap between hexagons (scaled proportionally)
+const HEX_RADIUS = 21.375;              // flat-top radius (px)
+const HEX_SPACING = 2.25;               // gap between hexagons
 const SQRT3 = Math.sqrt(3);
 const COL_STEP = (HEX_RADIUS + HEX_SPACING) * 1.5;
 const ROW_STEP = (HEX_RADIUS + HEX_SPACING) * SQRT3;
@@ -43,43 +39,59 @@ const INFLUENCE_RADIUS_PX = INFLUENCE_RADIUS_HEXES * HEX_RADIUS * 1.6;
 
 // ── Animation tuning ─────────────────────────────────────────────────────────
 const ACTIVATION_LERP = 0.07;           // ~350ms to reach target at 60fps
-const RECOVERY_LERP = 0.035;            // ~500ms recovery (slightly slower)
+const RECOVERY_LERP = 0.035;            // ~500ms recovery
 const ELASTIC_AMOUNT = 0.025;           // subtle elastic overshoot on recovery
-const IDLE_BREATH_SPEED = 0.09;       // slow sinusoidal breathing rhythm
-const IDLE_BREATH_AMP = 0.04;      // Increased by 5% from 0.002996
-const IDLE_WAVE_SPREAD = 0.02;           // 0 = uniform breathing (all hexagons pulse together)
-
-// ── Hex animated-state defaults ──────────────────────────────────────────────
-const DEFAULT_STATE = {
-  opacity: 0,
-  strokeWidth: 0,
-  scale: 0,
-  glowAlpha: 0,
-  fillAlpha: 0,
-  dx: 0,
-  dy: 0,
-};
+const IDLE_BREATH_SPEED = 0.09;         // slow sinusoidal breathing rhythm
+const IDLE_BREATH_AMP = 0.04;           // breathing amplitude
+const IDLE_WAVE_SPREAD = 0.02;          // breathing wave spread
 
 // ── Target values at full activation ─────────────────────────────────────────
-const ACTIVE_OPACITY = 0.05;       // Increased by 5% from 0.038948
+const ACTIVE_OPACITY = 0.05;
 const ACTIVE_STROKE_WIDTH = 1.4;
 const ACTIVE_SCALE = 0.08;              // scale *addition* (1 + 0.08)
-const ACTIVE_GLOW_ALPHA = 0.014;   // Increased by 5% from 0.0008988
-const ACTIVE_FILL_ALPHA = 0.003; // Increased by 5% from 0.00002247
-const SPRING_PUSH_PX = 1.8;            // max neighbor displacement in px
+const ACTIVE_GLOW_ALPHA = 0.014;
+const ACTIVE_FILL_ALPHA = 0.003;
+const SPRING_PUSH_PX = 1.8;              // max neighbor displacement in px
 
 // ── Precompute flat-top hexagon unit vertices ────────────────────────────────
-const HEX_VERTICES = [];
+const HEX_VERTICES: { x: number; y: number }[] = [];
 for (let i = 0; i < 6; i++) {
   const angle = (Math.PI / 3) * i;
   HEX_VERTICES.push({ x: Math.cos(angle), y: Math.sin(angle) });
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════ */
+interface Hexagon {
+  cx: number;
+  cy: number;
+  col: number;
+  row: number;
+  idx: number;
+  opacity: number;
+  strokeWidth: number;
+  scale: number;
+  glowAlpha: number;
+  fillAlpha: number;
+  dx: number;
+  dy: number;
+  tOpacity: number;
+  tStrokeWidth: number;
+  tScale: number;
+  tGlowAlpha: number;
+  tFillAlpha: number;
+  tDx: number;
+  tDy: number;
+}
+
+interface BackgroundState {
+  hexagons: Hexagon[];
+  mouse: { x: number; y: number };
+  animFrame: number;
+  startTime: number;
+}
 
 export default function HexMeshBackground() {
-  const canvasRef = useRef(null);
-  const stateRef = useRef({
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const stateRef = useRef<BackgroundState>({
     hexagons: [],
     mouse: { x: -9999, y: -9999 },
     animFrame: 0,
@@ -87,8 +99,8 @@ export default function HexMeshBackground() {
   });
 
   // ── Build hexagon grid ─────────────────────────────────────────────────────
-  const buildGrid = useCallback((width, height) => {
-    const hexagons = [];
+  const buildGrid = useCallback((width: number, height: number): Hexagon[] => {
+    const hexagons: Hexagon[] = [];
     const padX = HEX_RADIUS * 2;
     const padY = HEX_RADIUS * 2;
 
@@ -106,7 +118,6 @@ export default function HexMeshBackground() {
           col,
           row,
           idx: idx++,
-          // animated state (current)
           opacity: 0,
           strokeWidth: 0,
           scale: 0,
@@ -114,7 +125,6 @@ export default function HexMeshBackground() {
           fillAlpha: 0,
           dx: 0,
           dy: 0,
-          // target state
           tOpacity: 0,
           tStrokeWidth: 0,
           tScale: 0,
@@ -133,6 +143,7 @@ export default function HexMeshBackground() {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d', { alpha: false });
+    if (!ctx) return;
     const state = stateRef.current;
     let running = true;
 
@@ -152,7 +163,7 @@ export default function HexMeshBackground() {
     window.addEventListener('resize', resize);
 
     // ── Pointer tracking ───────────────────────────────────────────────────
-    const onPointerMove = (e) => {
+    const onPointerMove = (e: PointerEvent) => {
       state.mouse.x = e.clientX;
       state.mouse.y = e.clientY;
     };
@@ -164,7 +175,7 @@ export default function HexMeshBackground() {
     window.addEventListener('pointerleave', onPointerLeave);
 
     // ── Draw a single hexagon ──────────────────────────────────────────────
-    const drawHex = (cx, cy, radius) => {
+    const drawHex = (cx: number, cy: number, radius: number) => {
       ctx.beginPath();
       for (let i = 0; i < 6; i++) {
         const vx = cx + HEX_VERTICES[i].x * radius;
@@ -176,11 +187,10 @@ export default function HexMeshBackground() {
     };
 
     // ── Smooth lerp with elastic overshoot on recovery ─────────────────────
-    const springLerp = (current, target, isActivating) => {
+    const springLerp = (current: number, target: number, isActivating: boolean) => {
       if (isActivating) {
         return current + (target - current) * ACTIVATION_LERP;
       }
-      // Recovery with subtle elastic overshoot
       const diff = target - current;
       const progress = 1 - Math.abs(diff) / (Math.abs(current) + 0.001);
       const elastic = 1 + ELASTIC_AMOUNT * Math.sin(progress * Math.PI);
@@ -203,7 +213,6 @@ export default function HexMeshBackground() {
       const influenceR2 = INFLUENCE_RADIUS_PX * INFLUENCE_RADIUS_PX;
 
       // ── Phase 1: Compute targets ───────────────────────────────────────
-      // Find the closest hex to cursor for spring displacement source
       let closestIdx = -1;
       let closestDist = Infinity;
 
@@ -220,7 +229,6 @@ export default function HexMeshBackground() {
 
         if (dist2 < influenceR2) {
           const dist = Math.sqrt(dist2);
-          // Quadratic falloff — smooth, no hard edge
           const t = 1 - (dist / INFLUENCE_RADIUS_PX);
           const influence = t * t;
 
@@ -252,9 +260,8 @@ export default function HexMeshBackground() {
             const ddy = hex.cy - src.cy;
             const dd = Math.sqrt(ddx * ddx + ddy * ddy);
 
-            // Only push immediate & near neighbors (within ~2.5 hex radii)
             if (dd < HEX_RADIUS * 3.5 && dd > 0.1) {
-              const pushStrength = srcScale / ACTIVE_SCALE;  // 0..1
+              const pushStrength = srcScale / ACTIVE_SCALE;
               const distFalloff = 1 - (dd / (HEX_RADIUS * 3.5));
               const push = SPRING_PUSH_PX * pushStrength * distFalloff * distFalloff;
               hex.tDx += (ddx / dd) * push;
@@ -267,8 +274,6 @@ export default function HexMeshBackground() {
       // ── Phase 3: Animate current → target, then draw ───────────────────
       for (let i = 0; i < hexagons.length; i++) {
         const hex = hexagons[i];
-
-        // Determine if activating or recovering
         const activating = hex.tOpacity > hex.opacity + 0.000078645;
 
         hex.opacity = springLerp(hex.opacity, hex.tOpacity, activating);
@@ -279,11 +284,9 @@ export default function HexMeshBackground() {
         hex.dx = springLerp(hex.dx, hex.tDx, activating);
         hex.dy = springLerp(hex.dy, hex.tDy, activating);
 
-        // ── Idle breathing ─────────────────────────────────────────────
         const breath = Math.sin(elapsed * IDLE_BREATH_SPEED + hex.idx * IDLE_WAVE_SPREAD);
         const idleOpacity = 0.079 + breath * IDLE_BREATH_AMP;
 
-        // Composite opacity: idle base + interaction boost
         const finalOpacity = Math.min(1, idleOpacity + hex.opacity);
         const finalStrokeWidth = 0.3 + hex.strokeWidth;
         const finalScale = 1 + hex.scale;
@@ -291,13 +294,12 @@ export default function HexMeshBackground() {
         const drawCx = hex.cx + hex.dx;
         const drawCy = hex.cy + hex.dy;
 
-        // Skip off-screen hexagons
         if (drawCx + drawRadius < -20 || drawCx - drawRadius > w + 20 ||
           drawCy + drawRadius < -20 || drawCy - drawRadius > h + 20) {
           continue;
         }
 
-        // ── Draw glow layer (wider, softer stroke) ─────────────────────
+        // ── Draw glow layer ─────────────────────────────────────────────
         if (hex.glowAlpha > 0.000056175) {
           ctx.save();
           ctx.strokeStyle = `rgba(${COLORS.glowR}, ${COLORS.glowG}, ${COLORS.glowB}, ${hex.glowAlpha * 0.5})`;
@@ -317,7 +319,6 @@ export default function HexMeshBackground() {
 
         // ── Draw hex outline ───────────────────────────────────────────
         if (hex.opacity > 0.000393225) {
-          // Blend from idle color toward active primary based on activation
           const activeBlend = Math.min(1, hex.opacity / ACTIVE_OPACITY);
           const r = Math.round(198 + (COLORS.activeStrokeR - 198) * activeBlend);
           const g = Math.round(197 + (COLORS.activeStrokeG - 197) * activeBlend);
@@ -337,7 +338,6 @@ export default function HexMeshBackground() {
 
     state.animFrame = requestAnimationFrame(tick);
 
-    // ── Cleanup ────────────────────────────────────────────────────────────
     return () => {
       running = false;
       cancelAnimationFrame(state.animFrame);

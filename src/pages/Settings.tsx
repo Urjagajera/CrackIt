@@ -48,7 +48,7 @@ export default function Settings() {
         <div className="grid grid-cols-1 gap-gutter">
           
           {/* Hardware & Testing Section */}
-          <section className="settings-card bg-surface-container-lowest rounded-2xl p-6 md:p-8 shadow-[0_10px_30px_rgba(65,81,187,0.05)] border border-transparent focus-within:border-primary/45 transition-all">
+          <section className="settings-card bg-surface-container-lowest rounded-[24px] p-6 md:p-8 shadow-[0_10px_30px_rgba(65,81,187,0.05)] border border-transparent focus-within:border-primary/45 transition-all">
             <div className="flex items-center gap-4 mb-8">
               <div className="w-12 h-12 rounded-full bg-tertiary-fixed flex items-center justify-center text-tertiary shrink-0">
                 <span className="material-symbols-outlined">videocam</span>
@@ -118,7 +118,7 @@ export default function Settings() {
           </section>
 
           {/* Notifications Section */}
-          <section className="settings-card bg-surface-container-lowest rounded-2xl p-6 md:p-8 shadow-[0_10px_30px_rgba(65,81,187,0.05)] border border-transparent focus-within:border-primary/45 transition-all">
+          <section className="settings-card bg-surface-container-lowest rounded-[24px] p-6 md:p-8 shadow-[0_10px_30px_rgba(65,81,187,0.05)] border border-transparent focus-within:border-primary/45 transition-all">
             <div className="flex items-center gap-4 mb-8">
               <div className="w-12 h-12 rounded-full bg-secondary-fixed flex items-center justify-center text-secondary shrink-0">
                 <span className="material-symbols-outlined">notifications</span>
@@ -181,7 +181,7 @@ export default function Settings() {
           </section>
 
           {/* Danger Zone Section */}
-          <section className="settings-card bg-surface-container-lowest rounded-2xl p-6 md:p-8 border border-error/20 shadow-sm mt-8">
+          <section className="settings-card bg-surface-container-lowest rounded-[24px] p-6 md:p-8 border border-error/20 shadow-sm mt-8">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 rounded-full bg-error-container flex items-center justify-center text-error shrink-0">
                 <span className="material-symbols-outlined">dangerous</span>

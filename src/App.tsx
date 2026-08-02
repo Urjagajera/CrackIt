@@ -14,7 +14,7 @@ import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import Resume from './pages/Resume';
 import JobMatch from './pages/JobMatch';
-import ProjectIntel from './pages/ProjectIntel';
+import ProjectIntelligence from './pages/ProjectIntelligence';
 import InterviewSetup from './pages/InterviewSetup';
 import InterviewScreen from './pages/InterviewScreen';
 import InterviewReplay from './pages/InterviewReplay';
@@ -49,7 +49,7 @@ export default function App() {
               <Route path="/profile" element={<ErrorBoundary><Profile /></ErrorBoundary>} />
               <Route path="/resume" element={<ErrorBoundary><Resume /></ErrorBoundary>} />
               <Route path="/job-match" element={<ErrorBoundary><JobMatch /></ErrorBoundary>} />
-              <Route path="/project-intelligence" element={<ErrorBoundary><ProjectIntel /></ErrorBoundary>} />
+              <Route path="/project-intelligence" element={<ErrorBoundary><ProjectIntelligence /></ErrorBoundary>} />
               <Route path="/interview-setup" element={<ErrorBoundary><InterviewSetup /></ErrorBoundary>} />
               <Route path="/interview" element={<ErrorBoundary><InterviewScreen /></ErrorBoundary>} />
               <Route path="/interview-replay/:id" element={<ErrorBoundary><InterviewReplay /></ErrorBoundary>} />

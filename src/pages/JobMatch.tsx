@@ -44,7 +44,7 @@ export default function JobMatch() {
     <div className="px-margin-mobile md:px-margin-desktop pb-margin-mobile md:pb-margin-desktop min-h-screen text-left bg-background selection:bg-primary-fixed">
       {/* Header Section */}
       <header className="mb-10">
-        <h2 className="font-headline-lg text-headline-lg text-on-surface mb-2">Resume Intelligence</h2>
+        <h2 className="font-headline-lg text-headline-lg text-on-surface mb-2">Job Match &amp; ATS Intelligence</h2>
         <p className="text-body-lg text-on-surface-variant max-w-2xl leading-relaxed">
           Optimize your chances. Our AI analyzes your experience against the job description to bridge the gap between "Qualified" and "Hired".
         </p>

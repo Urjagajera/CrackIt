@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import HexMeshBackground from '../components/HexMeshBackground';
+import PublicNavbar from '../components/PublicNavbar';
+import PublicFooter from '../components/PublicFooter';
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -29,31 +31,7 @@ export default function Landing() {
   return (
     <div className="relative font-body-md text-body-md overflow-x-hidden bg-background text-on-surface scroll-smooth">
       <HexMeshBackground />
-      {/* TopNavBar — Floating Pill */}
-      <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex justify-between items-center px-6 py-3 rounded-full w-[95%] max-w-container-max bg-surface/80 backdrop-blur-md shadow-[0_10px_30px_rgba(65,81,187,0.08)]">
-        <div className="flex items-center gap-2">
-          <Link to="/" className="text-headline-md font-headline-md font-extrabold text-primary">CrackIt</Link>
-        </div>
-        <nav className="hidden md:flex gap-8">
-          <a className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors focus:outline-none focus:ring-1 focus:ring-primary rounded" href="#features">Features</a>
-          <a className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors focus:outline-none focus:ring-1 focus:ring-primary rounded" href="#how-it-works">How It Works</a>
-          <a className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors focus:outline-none focus:ring-1 focus:ring-primary rounded" href="#faq">FAQ</a>
-        </nav>
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => navigate('/login')}
-            className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors active:scale-95 duration-200 focus:outline-none focus:ring-2 focus:ring-primary rounded-lg px-2 py-1"
-          >
-            Login
-          </button>
-          <button
-            onClick={() => navigate('/signup')}
-            className="px-6 py-2.5 bg-secondary text-on-secondary rounded-full font-label-md text-label-md shadow-lg shadow-secondary/20 hover:bg-secondary-fixed-dim transition-all active:scale-95 duration-200 focus:outline-none focus:ring-2 focus:ring-secondary"
-          >
-            Sign Up
-          </button>
-        </div>
-      </header>
+      <PublicNavbar className="fixed top-4 left-1/2 -translate-x-1/2" />
 
       <main>
         {/* Hero Section */}
@@ -260,28 +238,7 @@ export default function Landing() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-surface-container-highest w-full py-12 px-margin-mobile md:px-margin-desktop">
-        <div className="max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-gutter">
-          <div className="flex flex-col items-center md:items-start gap-4">
-            <span className="font-headline-md text-headline-md font-extrabold text-primary">CrackIt</span>
-            <p className="font-body-md text-body-md text-on-surface-variant max-w-xs text-center md:text-left">© 2024 CrackIt AI. Friendly Professional Mentor.</p>
-          </div>
-          <div className="flex flex-wrap justify-center gap-8">
-            <a className="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-colors opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
-            <a className="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-colors opacity-80 hover:opacity-100" href="#">Terms of Service</a>
-            <a className="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-colors opacity-80 hover:opacity-100" href="#">Cookie Policy</a>
-            <a className="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-colors opacity-80 hover:opacity-100" href="#">Support</a>
-          </div>
-          <div className="flex gap-4">
-            <a className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary shadow-sm hover:scale-110 transition-transform" href="#">
-              <span className="material-symbols-outlined">public</span>
-            </a>
-            <a className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary shadow-sm hover:scale-110 transition-transform" href="#">
-              <span className="material-symbols-outlined">brand_awareness</span>
-            </a>
-          </div>
-        </div>
-      </footer>
+      <PublicFooter />
     </div>
   );
 }
