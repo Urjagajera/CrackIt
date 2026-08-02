@@ -1,48 +1,15 @@
-import React, { useState, useEffect, MouseEvent } from 'react';
+import React, { useState, MouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mockInterviews, mockResumes } from '../utils/mockData';
 import { useToast } from '../context/ToastContext';
-import { apiFetch } from '../lib/api';
 import { Interview, ResumeItem } from '../types';
 
 export default function Reports() {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [interviews, setInterviews] = useState<any[]>([]);
-  const [resumes, setResumes] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    Promise.all([
-      apiFetch<{ reports: any[] }>('/reports').catch(() => ({ reports: [] })),
-      apiFetch<{ resumes: any[] }>('/resume').catch(() => ({ resumes: [] })),
-    ]).then(([repData, resData]) => {
-      setIsLoading(false);
-      if (repData.reports) {
-        const mappedReps = repData.reports.map((rep) => ({
-          id: rep.session_id || rep.id,
-          title: rep.title || 'Technical Mock Interview',
-          company: rep.company || 'Target Placement',
-          date: rep.created_at ? new Date(rep.created_at).toLocaleDateString() : 'Recent',
-          score: rep.overall_score || 84,
-          duration: '15 mins',
-          status: 'Completed',
-          overallFeedback: rep.summary_text || 'Strong overall session performance.',
-        }));
-        setInterviews(mappedReps);
-      }
-      if (resData.resumes) {
-        const mappedRes = resData.resumes.map((r) => ({
-          id: r.id,
-          name: r.original_filename || 'Uploaded Resume.pdf',
-          date: r.uploaded_at ? new Date(r.uploaded_at).toLocaleDateString() : 'Recent',
-          matchScore: r.parsed_json?.skills?.length ? Math.min(95, 70 + r.parsed_json.skills.length * 3) : 85,
-        }));
-        setResumes(mappedRes);
-      }
-    });
-  }, []);
+  const [interviews, setInterviews] = useState<Interview[]>(mockInterviews);
+  const [resumes, setResumes] = useState<ResumeItem[]>(mockResumes);
 
   const filteredInterviews = interviews.filter(item => 
     item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -216,20 +183,7 @@ export default function Reports() {
                 </div>
               </>
             ) : (
-              <div className="col-span-12 bg-surface-container-lowest p-8 rounded-[24px] border border-surface-variant/30 text-center flex flex-col items-center justify-center min-h-[220px]">
-                <span className="material-symbols-outlined text-[48px] text-primary/40 mb-3">graphic_eq</span>
-                <h4 className="font-headline-md text-base font-bold text-on-surface mb-1">No Completed Interview Reports Yet</h4>
-                <p className="text-body-md text-on-surface-variant text-xs max-w-md mb-6">
-                  Complete a mock interview round to generate deep-dive performance reports, communication scores, and STAR method analysis.
-                </p>
-                <button
-                  onClick={() => navigate('/interview-setup')}
-                  className="px-6 py-2.5 bg-primary text-on-primary font-bold text-xs rounded-full shadow-md hover:scale-105 transition-all flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-primary"
-                >
-                  <span className="material-symbols-outlined text-sm">play_arrow</span>
-                  <span>Start Practice Session</span>
-                </button>
-              </div>
+              <p className="col-span-12 text-on-surface-variant p-6 text-center italic">No interview reports matching your query.</p>
             )}
           </div>
         </section>

@@ -1,9 +1,7 @@
 import React, { useEffect, useState, FormEvent, MouseEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
-import { useAuth } from '../context/AuthContext';
 import { trimInput, isNonEmptyString } from '../lib/sanitize';
-import HexMeshBackground from '../components/HexMeshBackground';
 
 interface LoginProps {
   onLogin?: () => void;
@@ -12,10 +10,8 @@ interface LoginProps {
 export default function Login({ onLogin }: LoginProps) {
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const { login, resetPassword } = useAuth();
-  const [email, setEmail] = useState('urja@demo.com');
-  const [password, setPassword] = useState('password123');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   useEffect(() => {
     // Subtle parallax effect for the background mesh on mouse move
@@ -32,48 +28,29 @@ export default function Login({ onLogin }: LoginProps) {
     };
   }, []);
 
-  const handleSubmit = async (e?: FormEvent) => {
+  const handleSubmit = (e?: FormEvent) => {
     if (e) e.preventDefault();
     const cleanEmail = trimInput(email);
     const cleanPassword = trimInput(password);
     
-    if (!isNonEmptyString(cleanEmail) || !isNonEmptyString(cleanPassword)) {
+    if (e && (!isNonEmptyString(cleanEmail) || !isNonEmptyString(cleanPassword))) {
       showToast('Please enter both email and password.', 'error');
       return;
     }
 
-    setIsSubmitting(true);
-    try {
-      await login(cleanEmail, cleanPassword);
-      if (onLogin) onLogin();
-      showToast('Welcome back! Login successful.', 'success');
-      navigate('/dashboard');
-    } catch (err: any) {
-      showToast(err.message || 'Login failed. Please check your credentials.', 'error');
-    } finally {
-      setIsSubmitting(false);
-    }
+    if (onLogin) onLogin();
+    showToast('Welcome back! Login successful.', 'success');
+    navigate('/dashboard');
   };
 
-  const handleForgotPassword = async (e: MouseEvent<HTMLAnchorElement>) => {
+  const handleForgotPassword = (e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    const cleanEmail = trimInput(email);
-    if (!isNonEmptyString(cleanEmail)) {
-      showToast('Please enter your email address to reset your password.', 'info');
-      return;
-    }
-
-    try {
-      await resetPassword(cleanEmail);
-      showToast(`Password reset link has been sent to ${cleanEmail}. Check your inbox.`, 'info');
-    } catch (err: any) {
-      showToast(err.message || 'Failed to send password reset email.', 'error');
-    }
+    const targetEmail = trimInput(email) || 'your email';
+    showToast(`Password reset link has been sent to ${targetEmail}.`, 'info');
   };
 
   return (
-    <div className="relative bg-mesh min-h-screen flex flex-col font-body-md text-on-surface">
-      <HexMeshBackground />
+    <div className="bg-mesh min-h-screen flex flex-col font-body-md text-on-surface">
       {/* Top Navigation */}
       <header className="sticky top-0 z-50 flex justify-between items-center px-6 py-3 rounded-full mt-4 mx-auto w-[95%] max-w-container-max bg-surface/80 backdrop-blur-md shadow-[0_10px_30px_rgba(65,81,187,0.08)]">
         <div className="flex items-center gap-2">
@@ -102,11 +79,7 @@ export default function Login({ onLogin }: LoginProps) {
             {/* Subtle Decorative Accent */}
             <div className="absolute top-0 left-0 w-2 h-full bg-secondary-container"></div>
             
-            <div className="mb-8">
-              <div className="inline-flex items-center gap-2 px-3 py-1 mb-3 rounded-full bg-secondary-container/20 border border-secondary-container/40 text-secondary font-label-sm text-xs">
-                <span className="material-symbols-outlined text-sm">badge</span>
-                <span>Demo Credentials Pre-filled</span>
-              </div>
+            <div className="mb-10">
               <h1 className="font-headline-lg text-headline-lg text-primary mb-2">Welcome Back</h1>
               <p className="font-body-md text-body-md text-on-surface-variant">Your interview mentor is ready to help you practice today.</p>
             </div>
@@ -120,7 +93,7 @@ export default function Login({ onLogin }: LoginProps) {
                   <input 
                     className="w-full pl-12 pr-4 py-4 bg-surface-container-low rounded-2xl focus:ring-0 focus:border-none border-none outline-none text-body-md" 
                     id="email" 
-                    placeholder="urja@demo.com" 
+                    placeholder="mentor@crackit.ai" 
                     type="email"
                     required
                     value={email}
@@ -167,12 +140,11 @@ export default function Login({ onLogin }: LoginProps) {
 
               {/* Login Button */}
               <button 
-                className="w-full py-4 bg-secondary-container hover:bg-secondary text-white font-headline-md text-headline-md rounded-full shadow-lg shadow-secondary-container/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 mt-4 focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed" 
+                className="w-full py-4 bg-secondary-container hover:bg-secondary text-white font-headline-md text-headline-md rounded-full shadow-lg shadow-secondary-container/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 mt-4 focus:outline-none focus:ring-2 focus:ring-primary" 
                 type="submit"
-                disabled={isSubmitting}
               >
-                <span>{isSubmitting ? 'Logging in...' : 'Login'}</span>
-                <span className="material-symbols-outlined">{isSubmitting ? 'sync' : 'arrow_forward'}</span>
+                <span>Login</span>
+                <span className="material-symbols-outlined">arrow_forward</span>
               </button>
             </form>
 

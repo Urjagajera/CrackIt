@@ -1,7 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
-import { useAuth } from '../context/AuthContext';
 
 interface SidebarProps {
   onLogout?: () => void;
@@ -10,7 +9,6 @@ interface SidebarProps {
 export default function Sidebar({ onLogout }: SidebarProps) {
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const { logout } = useAuth();
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: 'grid_view' },
@@ -25,18 +23,13 @@ export default function Sidebar({ onLogout }: SidebarProps) {
     { name: 'Settings', path: '/settings', icon: 'settings' }
   ];
 
-  const handleLogout = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleLogout = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    try {
-      await logout();
-      if (onLogout) {
-        onLogout();
-      }
-      showToast('Logged out successfully.', 'info');
-      navigate('/login');
-    } catch (err: any) {
-      showToast(err.message || 'Logout failed', 'error');
+    if (onLogout) {
+      onLogout();
     }
+    showToast('Logged out successfully.', 'info');
+    navigate('/login');
   };
 
   return (

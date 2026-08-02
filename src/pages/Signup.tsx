@@ -1,9 +1,7 @@
 import React, { useState, FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
-import { useAuth } from '../context/AuthContext';
 import { trimInput, isNonEmptyString } from '../lib/sanitize';
-import HexMeshBackground from '../components/HexMeshBackground';
 
 interface SignupProps {
   onLogin?: () => void;
@@ -12,21 +10,19 @@ interface SignupProps {
 export default function Signup({ onLogin }: SignupProps) {
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const { signup } = useAuth();
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const handleSubmit = async (e?: FormEvent) => {
+  const handleSubmit = (e?: FormEvent) => {
     if (e) e.preventDefault();
     const cleanName = trimInput(name);
     const cleanEmail = trimInput(email);
     const cleanPass = trimInput(password);
     const cleanConfirm = trimInput(confirmPassword);
 
-    if (!isNonEmptyString(cleanName) || !isNonEmptyString(cleanEmail) || !isNonEmptyString(cleanPass)) {
+    if (e && (!isNonEmptyString(cleanName) || !isNonEmptyString(cleanEmail) || !isNonEmptyString(cleanPass))) {
       showToast('Please fill out all required fields.', 'error');
       return;
     }
@@ -36,22 +32,13 @@ export default function Signup({ onLogin }: SignupProps) {
       return;
     }
 
-    setIsSubmitting(true);
-    try {
-      await signup(cleanEmail, cleanPass, cleanName);
-      if (onLogin) onLogin();
-      showToast('Account created successfully! Welcome to CrackIt AI.', 'success');
-      navigate('/dashboard');
-    } catch (err: any) {
-      showToast(err.message || 'Signup failed. Please try again.', 'error');
-    } finally {
-      setIsSubmitting(false);
-    }
+    if (onLogin) onLogin();
+    showToast('Account created successfully! Welcome to CrackIt AI.', 'success');
+    navigate('/dashboard');
   };
 
   return (
-    <div className="relative font-body-md text-body-md overflow-x-hidden bg-background text-on-surface min-h-screen flex flex-col">
-      <HexMeshBackground />
+    <div className="font-body-md text-body-md overflow-x-hidden bg-background text-on-surface">
       {/* Top Navigation */}
       <header className="sticky top-0 z-50 flex justify-between items-center px-6 py-3 bg-surface/80 backdrop-blur-md rounded-full mt-4 mx-auto w-[95%] max-w-container-max shadow-[0_10px_30px_rgba(65,81,187,0.08)]">
         <div className="flex items-center gap-2">
@@ -73,9 +60,44 @@ export default function Signup({ onLogin }: SignupProps) {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center px-margin-mobile md:px-margin-desktop py-6">
-        <div className="w-full max-w-[500px]">
-          {/* Signup Form Card */}
+      <main className="py-16 px-margin-mobile md:px-margin-desktop flex items-center justify-center">
+        <div className="w-full max-w-[1100px] grid md:grid-cols-2 gap-12 items-center text-left">
+          
+          {/* Left Column: Value Prop */}
+          <div className="space-y-6">
+            <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full font-label-sm text-xs font-semibold">
+              Free 14-Day Trial Included
+            </span>
+            <h1 className="font-headline-xl text-headline-xl text-on-surface font-extrabold text-[32px] md:text-[44px] leading-tight">
+              Start Practicing Real AI Interviews Today
+            </h1>
+            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-[440px]">
+              Join thousands of engineers and product leaders mastering high-stakes interviews with personalized AI voice mentors.
+            </p>
+            
+            <div className="space-y-4 pt-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-sm font-bold">check</span>
+                </div>
+                <span className="font-body-md text-sm">Adaptive technical &amp; behavioral AI personas</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-sm font-bold">check</span>
+                </div>
+                <span className="font-body-md text-sm">Instant STAR method &amp; confidence analysis</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-sm font-bold">check</span>
+                </div>
+                <span className="font-body-md text-sm">Resume ATS alignment &amp; project prep</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Signup Form Card */}
           <div className="bg-surface-container-lowest p-8 md:p-10 rounded-[32px] shadow-xl border border-surface-variant/30 relative">
             <div className="mb-8">
               <h3 className="font-headline-lg text-headline-lg text-on-surface mb-2 font-bold">Create Account</h3>
@@ -137,10 +159,9 @@ export default function Signup({ onLogin }: SignupProps) {
 
               <button 
                 type="submit"
-                disabled={isSubmitting}
-                className="w-full py-4 bg-primary text-on-primary font-bold text-sm rounded-full shadow-lg shadow-primary/20 hover:scale-[1.01] active:scale-95 transition-all mt-4 focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-4 bg-primary text-on-primary font-bold text-sm rounded-full shadow-lg shadow-primary/20 hover:scale-[1.01] active:scale-95 transition-all mt-4 focus:outline-none focus:ring-2 focus:ring-primary"
               >
-                {isSubmitting ? 'Creating Account...' : 'Create Account & Begin Practice'}
+                Create Account &amp; Begin Practice
               </button>
             </form>
 
@@ -157,17 +178,12 @@ export default function Signup({ onLogin }: SignupProps) {
               <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="Google" />
               <span>Continue with Google</span>
             </button>
-
-            <p className="text-center text-on-surface-variant text-xs mt-6">
-              Already have an account?{' '}
-              <Link to="/login" className="text-primary font-semibold hover:underline">Login</Link>
-            </p>
           </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="shrink-0 w-full py-6 px-margin-mobile md:px-margin-desktop bg-surface-container-highest flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left border-t border-surface-variant/30">
+      <footer className="w-full py-12 px-margin-desktop bg-surface-container-highest flex flex-col md:flex-row justify-between items-center gap-gutter text-center md:text-left border-t border-surface-variant/30">
         <div className="flex flex-col items-center md:items-start gap-2">
           <span className="font-headline-md text-headline-md font-extrabold text-primary">CrackIt</span>
           <p className="font-body-md text-body-md text-on-surface-variant opacity-80">© 2026 CrackIt AI. Friendly Professional Mentor.</p>

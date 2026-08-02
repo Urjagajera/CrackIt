@@ -1,24 +1,21 @@
-import React, { useState, FormEvent, useEffect } from 'react';
+import React, { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mockUserProfile } from '../utils/mockData';
 import { useToast } from '../context/ToastContext';
-import { useAuth } from '../context/AuthContext';
-import { apiFetch } from '../lib/api';
 import { trimInput, isNonEmptyString } from '../lib/sanitize';
 import SkillBadgeList from '../components/SkillBadgeList';
 
 export default function Profile() {
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const { user, profile: authProfile } = useAuth();
   const [profile, setProfile] = useState(mockUserProfile);
   const [skills, setSkills] = useState<string[]>(['Python', 'System Design', 'Kubernetes', 'React.js', 'Algorithms', 'Go Lang']);
   const [newSkill, setNewSkill] = useState<string>('');
   const [isAddingSkill, setIsAddingSkill] = useState<boolean>(false);
 
-  // Form states initialized from Auth context or fallback
-  const [fullName, setFullName] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
+  // Form states
+  const [fullName, setFullName] = useState<string>(profile.name);
+  const [email, setEmail] = useState<string>(profile.email);
   const [bio, setBio] = useState<string>('Aspiring Software Engineer passionate about distributed systems and cloud architecture.');
   const [college, setCollege] = useState<string>('Stanford University');
   const [cgpa, setCgpa] = useState<string>('3.92 / 4.0');
@@ -28,30 +25,7 @@ export default function Profile() {
   const [targetCompany, setTargetCompany] = useState<string>('Meta (Facebook)');
   const [mockIntensity, setMockIntensity] = useState<string>('Standard');
 
-  useEffect(() => {
-    if (authProfile?.full_name || user?.user_metadata?.full_name) {
-      const name = authProfile?.full_name || user?.user_metadata?.full_name || '';
-      setFullName(name);
-      setProfile(prev => ({ ...prev, name: name || prev.name }));
-    }
-    if (user?.email) {
-      setEmail(user.email);
-      setProfile(prev => ({ ...prev, email: user.email || prev.email }));
-    }
-    if (authProfile?.bio) {
-      setBio(authProfile.bio);
-    }
-    apiFetch<{ profile: any }>('/profile')
-      .then((data) => {
-        if (data.profile) {
-          if (data.profile.full_name) setFullName(data.profile.full_name);
-          if (data.profile.bio) setBio(data.profile.bio);
-        }
-      })
-      .catch(() => {});
-  }, [user, authProfile]);
-
-  const handleSave = async () => {
+  const handleSave = () => {
     const cleanName = trimInput(fullName);
     const cleanEmail = trimInput(email);
     
@@ -60,27 +34,14 @@ export default function Profile() {
       return;
     }
 
-    try {
-      await apiFetch('/profile', {
-        method: 'PUT',
-        body: JSON.stringify({
-          full_name: cleanName,
-          bio: trimInput(bio),
-          target_role: targetCompany,
-        }),
-      });
-
-      setProfile(prev => ({
-        ...prev,
-        name: cleanName,
-        email: cleanEmail,
-        targetCompany: targetCompany.includes('Meta') ? 'Meta' : targetCompany
-      }));
-      
-      showToast('Profile configuration saved successfully!', 'success');
-    } catch (err: any) {
-      showToast(err.message || 'Failed to update profile.', 'error');
-    }
+    setProfile(prev => ({
+      ...prev,
+      name: cleanName,
+      email: cleanEmail,
+      targetCompany: targetCompany.includes('Meta') ? 'Meta' : targetCompany
+    }));
+    
+    showToast('Profile configuration saved successfully!', 'success');
   };
 
   const handleAddSkill = (e: FormEvent) => {
