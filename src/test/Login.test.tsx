@@ -5,12 +5,23 @@ import { describe, it, expect, vi } from 'vitest';
 import Login from '../pages/Login';
 import { ToastProvider } from '../context/ToastContext';
 
+vi.mock('../context/AuthContext', () => ({
+  useAuth: () => ({
+    login: vi.fn().mockResolvedValue(undefined),
+    resetPassword: vi.fn().mockResolvedValue(undefined),
+  }),
+  AuthProvider: ({ children }: any) => <>{children}</>,
+}));
+import { AuthProvider } from '../context/AuthContext';
+
 const renderLogin = (onLogin = vi.fn()) => {
   return render(
     <ToastProvider>
-      <BrowserRouter>
-        <Login onLogin={onLogin} />
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <Login onLogin={onLogin} />
+        </BrowserRouter>
+      </AuthProvider>
     </ToastProvider>
   );
 };
@@ -38,7 +49,7 @@ describe('Login Component', () => {
     expect(handleLogin).not.toHaveBeenCalled();
   });
 
-  it('submits successfully with valid credentials', () => {
+  it('submits successfully with valid credentials', async () => {
     const handleLogin = vi.fn();
     renderLogin(handleLogin);
 
@@ -50,6 +61,8 @@ describe('Login Component', () => {
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
     fireEvent.click(submitBtn);
 
-    expect(handleLogin).toHaveBeenCalledTimes(1);
+    await vi.waitFor(() => {
+      expect(handleLogin).toHaveBeenCalledTimes(1);
+    });
   });
 });

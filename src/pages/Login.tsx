@@ -13,8 +13,8 @@ export default function Login({ onLogin }: LoginProps) {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { login, resetPassword } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('urja@demo.com');
+  const [password, setPassword] = useState('password123');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -102,7 +102,11 @@ export default function Login({ onLogin }: LoginProps) {
             {/* Subtle Decorative Accent */}
             <div className="absolute top-0 left-0 w-2 h-full bg-secondary-container"></div>
             
-            <div className="mb-10">
+            <div className="mb-8">
+              <div className="inline-flex items-center gap-2 px-3 py-1 mb-3 rounded-full bg-secondary-container/20 border border-secondary-container/40 text-secondary font-label-sm text-xs">
+                <span className="material-symbols-outlined text-sm">badge</span>
+                <span>Demo Credentials Pre-filled</span>
+              </div>
               <h1 className="font-headline-lg text-headline-lg text-primary mb-2">Welcome Back</h1>
               <p className="font-body-md text-body-md text-on-surface-variant">Your interview mentor is ready to help you practice today.</p>
             </div>

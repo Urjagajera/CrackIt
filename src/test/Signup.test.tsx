@@ -5,12 +5,22 @@ import { describe, it, expect, vi } from 'vitest';
 import Signup from '../pages/Signup';
 import { ToastProvider } from '../context/ToastContext';
 
+vi.mock('../context/AuthContext', () => ({
+  useAuth: () => ({
+    signup: vi.fn().mockResolvedValue(undefined),
+  }),
+  AuthProvider: ({ children }: any) => <>{children}</>,
+}));
+import { AuthProvider } from '../context/AuthContext';
+
 const renderSignup = (onLogin = vi.fn()) => {
   return render(
     <ToastProvider>
-      <BrowserRouter>
-        <Signup onLogin={onLogin} />
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <Signup onLogin={onLogin} />
+        </BrowserRouter>
+      </AuthProvider>
     </ToastProvider>
   );
 };
@@ -18,7 +28,7 @@ const renderSignup = (onLogin = vi.fn()) => {
 describe('Signup Component', () => {
   it('renders registration headline and input fields', () => {
     renderSignup();
-    expect(screen.getByText(/Start Practicing Real AI Interviews Today/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Create Account/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/Full Name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Email Address/i)).toBeInTheDocument();
   });

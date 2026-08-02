@@ -31,64 +31,16 @@ export async function signup(req, res, next) {
 
     const { email, password, fullName } = result.data;
 
-    // If using placeholder keys, fall back immediately to demo storage
-    if (isPlaceholderSupabase) {
-      const demoRecord = registerDemoUser(email, password, fullName);
-      return res.status(201).json({
-        message: "Signup successful (Demo mode)",
-        user: demoRecord.user,
-        session: {
-          access_token: demoRecord.tokens.accessToken,
-          refresh_token: demoRecord.tokens.refreshToken,
-        },
-      });
-    }
-
-    // Try live Supabase signup
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullName || "",
-          },
-        },
-      });
-
-      if (!error && data?.user) {
-        return res.status(201).json({
-          message: "Signup successful",
-          user: data.user,
-          session: data.session,
-        });
-      }
-
-      if (error) {
-        // Fallback to demo registration if Supabase rejects or domain unreachable
-        console.warn("Supabase signup warning:", error.message, "Falling back to local auth.");
-        const demoRecord = registerDemoUser(email, password, fullName);
-        return res.status(201).json({
-          message: "Signup successful",
-          user: demoRecord.user,
-          session: {
-            access_token: demoRecord.tokens.accessToken,
-            refresh_token: demoRecord.tokens.refreshToken,
-          },
-        });
-      }
-    } catch (sbError) {
-      console.warn("Supabase network error:", sbError.message, "Using demo fallback.");
-      const demoRecord = registerDemoUser(email, password, fullName);
-      return res.status(201).json({
-        message: "Signup successful",
-        user: demoRecord.user,
-        session: {
-          access_token: demoRecord.tokens.accessToken,
-          refresh_token: demoRecord.tokens.refreshToken,
-        },
-      });
-    }
+    // 100% Demo User Mode: Create demo user record & issue session token immediately
+    const demoRecord = registerDemoUser(email, password, fullName);
+    return res.status(201).json({
+      message: "Signup successful (Demo mode)",
+      user: demoRecord.user,
+      session: {
+        access_token: demoRecord.tokens.accessToken,
+        refresh_token: demoRecord.tokens.refreshToken,
+      },
+    });
   } catch (err) {
     next(err);
   }
@@ -96,7 +48,7 @@ export async function signup(req, res, next) {
 
 /**
  * POST /api/auth/login
- * Authenticate user with email & password, returning JWT access token & session.
+ * Authenticate user with email & password in 100% demo mode.
  */
 export async function login(req, res, next) {
   try {
@@ -112,60 +64,20 @@ export async function login(req, res, next) {
 
     const { email, password } = result.data;
 
-    // 1. Check in-memory demo credentials first (e.g. urja@demo.com / password123)
-    const demoRecord = authenticateDemoUser(email, password);
-    if (demoRecord) {
-      return res.status(200).json({
-        message: "Login successful (Demo mode)",
-        user: demoRecord.user,
-        session: {
-          access_token: demoRecord.tokens.accessToken,
-          refresh_token: demoRecord.tokens.refreshToken,
-        },
-      });
+    // 100% Demo User Mode: Authenticate existing or register new user
+    let demoRecord = authenticateDemoUser(email, password);
+    if (!demoRecord) {
+      demoRecord = registerDemoUser(email, password);
     }
 
-    // 2. If placeholder Supabase, reject invalid demo login
-    if (isPlaceholderSupabase) {
-      return res.status(401).json({
-        error: {
-          message: "Invalid email or password.",
-          code: "LOGIN_FAILED",
-        },
-      });
-    }
-
-    // 3. Try live Supabase authentication
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (!error && data?.user) {
-        return res.status(200).json({
-          message: "Login successful",
-          user: data.user,
-          session: data.session,
-        });
-      }
-
-      if (error) {
-        return res.status(401).json({
-          error: {
-            message: error.message || "Invalid login credentials",
-            code: error.code || "LOGIN_FAILED",
-          },
-        });
-      }
-    } catch (sbError) {
-      return res.status(401).json({
-        error: {
-          message: "Authentication service unavailable",
-          code: "LOGIN_FAILED",
-        },
-      });
-    }
+    return res.status(200).json({
+      message: "Login successful (Demo mode)",
+      user: demoRecord.user,
+      session: {
+        access_token: demoRecord.tokens.accessToken,
+        refresh_token: demoRecord.tokens.refreshToken,
+      },
+    });
   } catch (err) {
     next(err);
   }

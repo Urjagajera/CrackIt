@@ -133,6 +133,7 @@ export default function HexMeshBackground() {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d', { alpha: false });
+    if (!ctx) return;
     const state = stateRef.current;
     let running = true;
 
